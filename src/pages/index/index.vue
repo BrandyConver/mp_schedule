@@ -54,19 +54,6 @@ export default {
     //   }
     // })
 
-    // // 此段应在服务器端/云函数调用 
-    // wx.request({
-    //   url: `https://api.weixin.qq.com/sns/jscode2session?appid=${_this.appid}&secret=0f613f70d9ce01a03ea415da054175ed&js_code=${_this.code}&grant_type=authorization_code`,
-    //   data: {},
-    //   header: {
-    //       'content-type': 'application/json'
-    //   },
-    //   success: function (res) {
-    //     // openid = res.data.openid //返回openid
-    //     console.log(res)
-    //   }
-    // })
-
     // // 获取用户信息
     // wx.getSetting({ // 获取用户设置 
     //   success (res) {
@@ -113,6 +100,7 @@ export default {
 </script>
 
 <style scoped>
+/*task_name、time背景色*/
 .task{
   margin:0 10px;
   padding: 5px 5px;
