@@ -1,0 +1,11 @@
+<template name="f62e9a0c"><view id="edit" class="_div data-v-0d08db6d"><form action class="_form data-v-0d08db6d data"><input type="text" class="_input data-v-0d08db6d task_name" name="task_name" value="{{task_name}}" bindblur="handleProxy" maxlength="50" placeholder="任务名称" data-eventid="{{'0'}}" data-comkey="{{$k}}" /> <view class="_div data-v-0d08db6d switch">不限时间范围<switch bindchange="handleProxy" data-eventid="{{'1'}}" data-comkey="{{$k}}" class="_switch data-v-0d08db6d" /></view> <view class="_div data-v-0d08db6d {{[true ? 'pick' : '', all_time ? 'dispick' : '']}}"><picker class="_picker data-v-0d08db6d picker" mode="date" value="{{start_date}}" bindchange="handleProxy" disabled="{{all_time}}" data-eventid="{{'2'}}" data-comkey="{{$k}}">
+				    开始时间：{{start_date}}
+				</picker>  
+				<picker class="_picker data-v-0d08db6d picker" mode="time" value="{{start_time}}" bindchange="handleProxy" disabled="{{all_time}}" data-eventid="{{'3'}}" data-comkey="{{$k}}">
+				    {{start_time}}
+				</picker></view> <view class="_div data-v-0d08db6d {{[true ? 'pick' : '', all_time ? 'dispick' : '']}}"><picker class="_picker data-v-0d08db6d picker" mode="date" value="{{end_date}}" bindchange="handleProxy" disabled="{{all_time}}" data-eventid="{{'4'}}" data-comkey="{{$k}}">
+				    结束时间：{{end_date}}
+				</picker>  
+				<picker class="_picker data-v-0d08db6d picker" mode="time" value="{{end_time}}" bindchange="handleProxy" disabled="{{all_time}}" data-eventid="{{'5'}}" data-comkey="{{$k}}">
+				    {{end_time}}
+				</picker></view></form> <view class="_div data-v-0d08db6d save"><button bindtap="handleProxy" data-eventid="{{'6'}}" data-comkey="{{$k}}" class="_button data-v-0d08db6d">保存</button></view></view></template>

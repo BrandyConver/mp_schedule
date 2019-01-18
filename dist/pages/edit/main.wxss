@@ -1,0 +1,1 @@
+.task_name{border-top:2rpx solid #f0f0f0;margin:10rpx 0}.switch,.task_name{border-bottom:2rpx solid #f0f0f0;padding:10rpx}.switch{display:flex;justify-content:space-between}.pick{padding:0 10rpx 10rpx;border-bottom:2rpx solid #f0f0f0}.dispick{color:#5a5a5a}.pick>picker{display:inline-block}.save{position:absolute;bottom:0;width:100%}
