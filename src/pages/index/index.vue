@@ -1,26 +1,33 @@
 <template>
-  <div id="index">
+  <div id="index" :style="{backgroundColor:'rgb(240,240,240):rgb(250,250,250)'}">
     <div v-if="tasks.length>0" class="task_list" @longpress="multiple">
+      <div class='space'></div>
       <div class="task" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" >
         <div class="task_name">{{task.task_name}}</div>
-        <div class="task_time"><span v-if="task.all_time">长期任务</span><span v-else>{{task.start_time}}~{{task.end_time}}</span></div>
+        <div class="task_time">
+          <span v-if="task.all_time">长期任务</span>
+          <span v-else v-bind:style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
+        </div>
       </div>
+      <!-- <div>{{time}}</div> -->
     </div>
-    <div v-else>今天没有任务项</div> 
+    <div v-else>今天没有任务项</div>
+    <div class='space'></div>
     <div class='edit'><a href="/pages/edit/main" ><img class="toEdit" src="/static/icon/add.png" ></a></div>
-    <div></div>
   </div>
 </template>
 
 <script>
-
+import getTime from '../../components/getTime.js';
 export default {
   data () {
     return {
       tasks: [],
       isAuth: true,
       openid: '',
-      appid: 'wx62021cbe5853225b'
+      appid: 'wx62021cbe5853225b',
+      timecolor: ['blue', 'rgb(120,20,20)'],
+      time: getTime()
     }
   },
   methods: {
@@ -45,14 +52,6 @@ export default {
   onShow () {
     var _this = this;
     wx.cloud.init();
-
-    // // 调用wx.login获取code
-    // wx.login({
-    //   success (res) {
-    //     console.log(res)
-    //     _this.code = res.code 
-    //   }
-    // })
 
     // // 获取用户信息
     // wx.getSetting({ // 获取用户设置 
@@ -100,16 +99,23 @@ export default {
 </script>
 
 <style scoped>
-/*task_name、time背景色*/
+#index{
+  background-color:rgb(240,240,240);
+}
+.space{
+  height:1px;
+}
 .task{
-  margin:0 10px;
+  margin: 10px;
   padding: 5px 5px;
-  border-bottom:1px solid rgb(220,220,220);
+  /*border-bottom:1px solid rgb(220,220,220);*/
+  border-radius: 10px;
+  background-color: rgb(255,255,255);
 }
-.task:first-of-type{
-  margin-top:5px;
-  border-top:1px solid rgb(220,220,220);;
-}
+/*.task:first-of-type{
+  margin-top: 20px;
+  border-top:1px solid rgb(220,220,220);
+}*/
 .task_name{
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,7 +123,6 @@ export default {
 }
 .task_time{
   font-size:15px;
-  color:rgb(20,20,20);
 }
 .toEdit{
   width:50px;

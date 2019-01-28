@@ -19,11 +19,13 @@
 				    {{end_time}}
 				</picker>
 			</div>
+      <textarea name="detail" id="detail" cols="30" rows="10"></textarea>
 		</form>
 		<div class="save"><button @click="save">保存</button></div>
 	</div>
 </template>
 <script>
+import getTime from '../../components/getTime.js';
 export default{
   data () {
     return {
@@ -41,33 +43,26 @@ export default{
   methods: {
     // 从picker组件读取时间日期
   	change_sd (e) {
-  	  this.start_date = e.mp.detail.value
+  	  this.start_date = e.mp.detail.value;
   	},
   	change_st (e) {
-      this.start_time = e.mp.detail.value
+      this.start_time = e.mp.detail.value;
   	},
   	change_ed (e) {
-  	  this.end_date = e.mp.detail.value
+  	  this.end_date = e.mp.detail.value;
   	},
   	change_et (e) {
-  	  this.end_time = e.mp.detail.value
+  	  this.end_time = e.mp.detail.value;
   	},
     AllTime (e) {
-      console.log(e.mp.detail.value)
+      console.log(e.mp.detail.value);
       this.all_time = !this.all_time;
-    },
-    // 设置时间
-    setTime () {
-        let now = new Date()
-      this.start_date = this.end_date = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()
-      this.start_time = this.end_time = now.getHours() + ':' + now.getMinutes()
     },
     // 保存
     save () {
       if (this.task_name !== '') {
-        let now = new Date()
-        let createTime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes()
-        const tasks = wx.cloud.database().collection('tasks')
+        let createTime = getTime();
+        const tasks = wx.cloud.database().collection('tasks');
         let data = {
           task_name: this.task_name,
           all_time: this.all_time,
@@ -75,14 +70,14 @@ export default{
           start_time: this.start_date + ' ' + this.start_time,
           end_time: this.end_date + ' ' + this.end_time,
           create_time: createTime
-        }
+        };
 
         if (this.id) { // 更新
           tasks.doc(this.id).update({
             data   
           }).then(function (res) {
-            console.log(res)
-          })
+            console.log(res);
+          });
         } else { // 添加
           tasks.add({
             data
@@ -93,7 +88,7 @@ export default{
               })
             },
             function (res) {
-              console.log(res)
+              console.log(res);
             })
             //
         }
@@ -101,7 +96,7 @@ export default{
         wx.navigateBack({
           delta: 9
         })
-        this.task_name = ''
+        this.task_name = '';
       } else {
         wx.showToast({
           icon: 'none',
@@ -113,18 +108,21 @@ export default{
   },
   onLoad (options) {
     if (options.id) {
-      this.id = options.id
-      this.task_name = options.task_name
+      // 导入任务内容
+      this.id = options.id;
+      this.task_name = options.task_name;
       if (options.all_time) {
         this.all_time = options.alltime;
       } else {
-        this.start_date = options.start_time.split(' ')[0]
-        this.start_time = options.start_time.split(' ')[1]
-        this.end_date = options.end_time.split(' ')[0]
-        this.end_time = options.end_time.split(' ')[1]  
+        this.start_date = options.start_time.split(' ')[0];
+        this.start_time = options.start_time.split(' ')[1];
+        this.end_date = options.end_time.split(' ')[0];
+        this.end_time = options.end_time.split(' ')[1];
       }
     } else {
-      this.setTime()
+      // 初始化时间
+      this.start_date = this.end_date = getTime().split(' ')[0];
+      this.start_time = this.end_time = getTime().split(' ')[1];
     }
   },
   onUnload () {
@@ -142,7 +140,13 @@ export default{
   }
 }
 </script>
-<style>
+<style scoped>
+#edit{
+  background-color: rgb(240,240,240);
+}
+/*#edit>*{
+  background-color: rgb(255,255,255);
+}*/
 .task_name{
   border-top:1px solid rgb(240,240,240);
   border-bottom: 1px solid rgb(240,240,240);
@@ -164,6 +168,9 @@ export default{
 }
 .pick>picker{
   display: inline-block;
+}
+#detail{
+
 }
 .save{
   position:absolute;
