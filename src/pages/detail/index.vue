@@ -1,9 +1,13 @@
 <template>
   <div id="detail">
     <div>
-      <view>{{task.task_name}}</view>
-      <view class="time">{{task.start_time}}~{{task.end_time}}</view>
+      <!-- <view>{{task.task_name}}</view>
       <view>创建时间:{{task.create_time}}</view>
+      <view class="time">{{task.start_time}}~{{task.end_time}}</view>
+      <view>long_term:{{task.long_term}}</view> -->
+
+      <view v-for="(value,key) in task" :key="item">{{key}}:{{value}}</view>
+      <!-- <view>detail:{{task.detail}}</view> -->
     </div>
 
     <div class="button">
@@ -51,16 +55,16 @@ export default {
     },
     // 跳转到编辑页 并传递任务详细内容
     toEdit () { // 存入缓存 pending
-      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}`
+      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}&detail=${this.task.detail}&long_term=${this.task.long_term}`
       wx.redirectTo({url})
     }
   },
   onLoad (options) {
     // 查询数据库
-    const tasks = wx.cloud.database().collection('tasks')
-    this.tasks = tasks
-    this.id = options.id
-    let _this = this
+    const tasks = wx.cloud.database().collection('tasks');
+    this.tasks = tasks;
+    this.id = options.id;
+    let _this = this;
     tasks.doc(_this.id)
     .get({  
       success: function (res) {
@@ -76,7 +80,7 @@ export default {
   color: rgb(90,90,90)
 }
 .button{
-  position: absolute;
+  position: fixed;
   bottom:0;
   width:100%;
   display: flex;

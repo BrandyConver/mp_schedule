@@ -1,19 +1,20 @@
 <template>
-  <div id="index" :style="{backgroundColor:'rgb(240,240,240):rgb(250,250,250)'}">
+  <div id="index" :style="{minHeight:windowHeight + 'px'}">
     <div v-if="tasks.length>0" class="task_list" @longpress="multiple">
       <div class='space'></div>
-      <div class="task" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" >
+      <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" >
         <div class="task_name">{{task.task_name}}</div>
         <div class="task_time">
-          <span v-if="task.all_time">长期任务</span>
-          <span v-else v-bind:style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
+          <span v-if="task.long_term" class="long_term">长期任务</span>
+          <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
         </div>
       </div>
-      <!-- <div>{{time}}</div> -->
     </div>
-    <div v-else>今天没有任务项</div>
+    <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">今天没有任务项</div>
     <div class='space'></div>
-    <div class='edit'><a href="/pages/edit/main" ><img class="toEdit" src="/static/icon/add.png" ></a></div>
+    <div><a href="/pages/edit/main" ><img class="edit" src="/static/icon/add.png" ></a></div>
+    <div @click="openMenu" v-show="!showMenu"><img class="menu" src="/static/icon/menu.png" ></div>
+    <div v-show="showMenu" class=menu></div>
   </div>
 </template>
 
@@ -27,7 +28,8 @@ export default {
       openid: '',
       appid: 'wx62021cbe5853225b',
       timecolor: ['blue', 'rgb(120,20,20)'],
-      time: getTime()
+      time: getTime(),
+      windowHeight: ''
     }
   },
   methods: {
@@ -39,15 +41,18 @@ export default {
     getUserInfo (e) {
       console.log(e);
     },
+    openMenu () {
+      this.showMenu = true;
+    },
+    // 多选操作
     multiple () {
-      // do
     }
   },
-  // watch () {
-  //   openid: function (newval,oldval) {}
-  // },
   onLoad () {
-    // 使用缓存
+    this.windowHeight = wx.getSystemInfoSync().windowHeight;// 获取窗口高度
+  },
+  onPullDownRefresh () {
+    return true;
   },
   onShow () {
     var _this = this;
@@ -99,6 +104,9 @@ export default {
 </script>
 
 <style scoped>
+/* page{ 无效
+  background-color:rgb(240,240,240);
+} */
 #index{
   background-color:rgb(240,240,240);
 }
@@ -108,14 +116,9 @@ export default {
 .task{
   margin: 10px;
   padding: 5px 5px;
-  /*border-bottom:1px solid rgb(220,220,220);*/
   border-radius: 10px;
   background-color: rgb(255,255,255);
 }
-/*.task:first-of-type{
-  margin-top: 20px;
-  border-top:1px solid rgb(220,220,220);
-}*/
 .task_name{
   overflow: hidden;
   text-overflow: ellipsis;
@@ -124,9 +127,23 @@ export default {
 .task_time{
   font-size:15px;
 }
-.toEdit{
-  width:50px;
-  height:50px;
+.no_task{
+  text-align: center;
+  padding-top: 10px;
+  font-size:18px;
+}
+.long_term{
+  color:blue;
+}
+.menu{
+  width:36px;
+  height:36px;  
+  padding:10px;
+  position:fixed;
+  border-radius:35px;
+  background-color: rgba(41, 179, 128,0.5);
+  bottom:20px;
+  left:20px;
 }
 .edit{
   width:50px;
@@ -134,7 +151,7 @@ export default {
   padding:3px;
   position:fixed;
   border-radius:35px;
-  background-color:#1296db;
+  background-color:rgba(0, 13, 192, 0.5);
   bottom:20px;
   right:20px;
 }
