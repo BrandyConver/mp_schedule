@@ -1,8 +1,8 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}">
-    <div v-if="tasks.length>0" class="task_list" @longpress="multiple">
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideMenu">
+    <div v-if="tasks.length>0" class="task_list" >
       <div class='space'></div>
-      <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" >
+      <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multiple">
         <div class="task_name">{{task.task_name}}</div>
         <div class="task_time">
           <span v-if="task.long_term" class="long_term">长期任务</span>
@@ -12,9 +12,18 @@
     </div>
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">今天没有任务项</div>
     <div class='space'></div>
-    <div><a href="/pages/edit/main" ><img class="edit" src="/static/icon/add.png" ></a></div>
-    <div @click="openMenu" v-show="!showMenu"><img class="menu" src="/static/icon/menu.png" ></div>
-    <div v-show="showMenu" class=menu></div>
+    <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
+    <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
+    <div v-if="showMenu" class='menu'>
+      <div class="menuli">查看完成</div>
+      <div class="menuli">任务总览</div>
+      <div class="menuli">更多设置</div>
+    </div>
+      <div class="multi_btn" v-if="multi">
+        <div>删除</div>
+        <div>标记完成</div>
+        <div @click="multi=false">取消</div>
+      </div>
   </div>
 </template>
 
@@ -29,7 +38,9 @@ export default {
       appid: 'wx62021cbe5853225b',
       timecolor: ['blue', 'rgb(120,20,20)'],
       time: getTime(),
-      windowHeight: ''
+      windowHeight: '',
+      showMenu: false,
+      multi: false
     }
   },
   methods: {
@@ -44,8 +55,13 @@ export default {
     openMenu () {
       this.showMenu = true;
     },
+    hideMenu () {
+      this.showMenu = false;
+    },
     // 多选操作
     multiple () {
+      this.multi = true;
+      // todo
     }
   },
   onLoad () {
@@ -135,7 +151,7 @@ export default {
 .long_term{
   color:blue;
 }
-.menu{
+.openmenu{
   width:36px;
   height:36px;  
   padding:10px;
@@ -145,7 +161,7 @@ export default {
   bottom:20px;
   left:20px;
 }
-.edit{
+.toedit{
   width:50px;
   height:50px;
   padding:3px;
@@ -154,5 +170,45 @@ export default {
   background-color:rgba(0, 13, 192, 0.5);
   bottom:20px;
   right:20px;
+}
+.menu{
+  padding:5px 0;
+  display:inline-flex;
+  flex-direction: column;
+  background-color:#FFF;
+  border-radius:10px;
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  box-shadow:0px 0px 15px #999;
+}
+.menu>div{
+  font-size:20px;
+  border-bottom:2px solid #eee;
+  padding:10px 5px;
+  text-align:center;
+}
+.menu>div:last-child{
+  border:none;
+}
+.multi_btn{
+  position:fixed;
+  width:100%;
+  bottom:0px;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background-color: #FFF;
+  box-shadow:0px -1px 10px #666;
+}
+.multi_btn>div{
+  padding:2px;
+  color:#222;
+  border-right:2px solid #DDD;
+  flex:1;
+  text-align:center;
+}
+.multi_ben>div:last-child{
+  border:none;
 }
 </style>

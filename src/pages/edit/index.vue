@@ -4,7 +4,7 @@
       <div class="space"></div>
 			<input type="text" class="task_name control" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">
       <textarea name="detail" class='control' id="detail"  v-model="detail" placeholder="任务详情"></textarea>
-      <div class='switch control'>不限时间范围<switch @change="allTime" :checked="long_term"/></div>
+      <div class='switch control'>不限时间范围<switch @change="allTime"  :checked="long_term"/></div>
 			<div :class="{pick:true, control:true, dispick:long_term}">
 				<picker class="picker" mode="date" :value="start_date" @change="change_sd" :disabled="long_term">
 				    开始时间：{{start_date}}
@@ -21,6 +21,8 @@
 				    {{end_time}}
 				</picker>
 			</div>
+
+
 
 		</form>
 		<div class="save"><button @click="save">保存</button></div>
@@ -59,8 +61,8 @@ export default{
   	  this.end_time = e.mp.detail.value;
   	},
     allTime (e) {
-      console.log(e.mp.detail.value);
-      this.long_term = !this.long_term;
+      this.long_term = e.mp.detail.value;
+      console.log(this.long_term)
       if (!this.long_term) {
         this.initTime();
       }
@@ -126,8 +128,6 @@ export default{
       this.detail = options.detail;
       this.long_term = options.long_term;
       if (options.long_term) {
-        this.long_term = options.long_term;
-      } else {
         this.start_date = options.start_time.split(' ')[0];
         this.start_time = options.start_time.split(' ')[1];
         this.end_date = options.end_time.split(' ')[0];
