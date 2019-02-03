@@ -1,29 +1,53 @@
 <template>
   <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideMenu">
-    <div v-if="tasks.length>0" class="task_list" >
-      <div class='space'></div>
-      <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multiple">
-        <div class="task_name">{{task.task_name}}</div>
-        <div class="task_time">
-          <span v-if="task.long_term" class="long_term">长期任务</span>
-          <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
+    <div v-show="!multi">
+      <div v-if="tasks.length>0" class="task_list" >
+        <div class='space'></div>
+        <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multiple">
+          <div class="task_name">{{task.task_name}}</div>
+          <div class="task_time">
+            <span v-if="task.long_term" class="long_term">长期任务</span>
+            <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
+          </div>
         </div>
+      </div>        
+      <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">今天没有任务项</div>
+      <div class='space'></div>
+    </div>
+    
+    <div v-show="multi" class="task_list " >
+      <div class='space'></div>
+      <checkbox-group  @change="select">
+        <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" >
+            <label :for="task._id" class="checkbox_label">
+              <checkbox :id="task._id" :value="task._id"  />
+              <div class="check_body">
+                <div class="task_name">{{task.task_name}}</div>
+                <div class="task_time">
+                  <span v-if="task.long_term" class="long_term">长期任务</span>
+                  <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
+                </div>
+              </div>
+            </label>
+        </div>
+      </checkbox-group>
+    </div>
+
+    <div class="button-group">
+      <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
+      <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
+      <div v-if="showMenu" class='menu'>
+        <div class="menuli" @click="toFinished">查看完成</div>
+        <div class="menuli">任务总览</div>
+        <div class="menuli">更多设置</div>
       </div>
-    </div>
-    <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">今天没有任务项</div>
-    <div class='space'></div>
-    <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
-    <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
-    <div v-if="showMenu" class='menu'>
-      <div class="menuli">查看完成</div>
-      <div class="menuli">任务总览</div>
-      <div class="menuli">更多设置</div>
-    </div>
       <div class="multi_btn" v-if="multi">
-        <div>删除</div>
+        <div @click="Delete">删除</div>
         <div>标记完成</div>
         <div @click="multi=false">取消</div>
       </div>
+    </div>
+
   </div>
 </template>
 
@@ -40,7 +64,8 @@ export default {
       time: getTime(),
       windowHeight: '',
       showMenu: false,
-      multi: false
+      multi: false,
+      selected: []
     }
   },
   methods: {
@@ -58,10 +83,31 @@ export default {
     hideMenu () {
       this.showMenu = false;
     },
-    // 多选操作
+    select (e) {
+      this.selected = e.mp.detail.value;
+    },
     multiple () {
       this.multi = true;
       // todo
+    },
+    Delete () {
+      wx.cloud.callFunction({
+      name: 'multi',
+      data: {
+        ids: this.selected
+      },
+      success: res => {
+        console.log(res);
+        // 查询数据库
+        // const db = wx.cloud.database();
+      },
+      fail: err => {
+        console.error('err' + err);
+      }
+    });   
+    },
+    toFinished () {
+      wx.navigateTo({url: '/pages/finished/main'})
     }
   },
   onLoad () {
@@ -69,6 +115,7 @@ export default {
   },
   onPullDownRefresh () {
     return true;
+    // todo
   },
   onShow () {
     var _this = this;
@@ -90,7 +137,7 @@ export default {
     //   }
     // })
 
-    // 调用云函数获取openid
+    // 调用云函数,获取openid
     wx.cloud.callFunction({
       name: 'getOpenId',
       data: {},
@@ -150,6 +197,14 @@ export default {
 }
 .long_term{
   color:blue;
+}
+.checkbox_label{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+.check_body{
+  flex:auto;
 }
 .openmenu{
   width:36px;

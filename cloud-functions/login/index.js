@@ -4,7 +4,6 @@
 /* event 参数包含
  * - 小程序端调用传入的 data
  * - 经过微信鉴权直接可信的用户唯一标识 openid 
- * 
  */
 exports.main = (event, context) => {
   console.log('event:' + event)
