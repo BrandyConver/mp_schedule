@@ -3,7 +3,7 @@
     <div v-show="!multi">
       <div v-if="tasks.length>0" class="task_list" >
         <div class='space'></div>
-        <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multiple">
+        <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multi=true">
           <div class="task_name">{{task.task_name}}</div>
           <div class="task_time">
             <span v-if="task.long_term" class="long_term">长期任务</span>
@@ -42,8 +42,8 @@
         <div class="menuli">更多设置</div>
       </div>
       <div class="multi_btn" v-if="multi">
-        <div @click="Delete">删除</div>
-        <div>标记完成</div>
+        <div @click="remove">删除</div>
+        <div @click="finish">标记完成</div>
         <div @click="multi=false">取消</div>
       </div>
     </div>
@@ -86,57 +86,70 @@ export default {
     select (e) {
       this.selected = e.mp.detail.value;
     },
-    multiple () {
-      this.multi = true;
-      // todo
-    },
-    Delete () {
+    remove () {
       wx.cloud.callFunction({
-      name: 'multi',
-      data: {
-        ids: this.selected
-      },
-      success: res => {
-        console.log(res);
-        // 查询数据库
-        // const db = wx.cloud.database();
-      },
-      fail: err => {
-        console.error('err' + err);
-      }
-    });   
+        name: 'multi',
+        data: {
+          ids: this.selected,
+          operation: 'remove'
+        },
+        success: res => {
+          console.log(res.result);
+          this.getData();
+        },
+        fail: err => {
+          console.error('err' + err);
+        }
+      });
+      this.multi = false;
+    },
+    finish () {
+      wx.cloud.callFunction({
+        name: 'multi',
+        data: {
+          ids: this.selected,
+          operation: 'finish'
+        },
+        success: res => {
+          console.log(res.result);
+          this.getData();
+        },
+        fail: err => {
+          console.error('err' + err);
+        }
+      }); 
+      this.multi = false;
     },
     toFinished () {
       wx.navigateTo({url: '/pages/finished/main'})
+    },
+    getData () {
+      let _this = this;
+      const db = wx.cloud.database();
+      db.collection('tasks')
+      .where({
+        _openid: this.openid 
+      })
+      .get({
+        success: function (res) {
+          _this.tasks = res.data;
+        },
+        fail (res) {
+          console.log(res.errMsg);
+        }
+      });
     }
   },
   onLoad () {
     this.windowHeight = wx.getSystemInfoSync().windowHeight;// 获取窗口高度
   },
   onPullDownRefresh () {
-    return true;
-    // todo
+    this.getData();
+    wx.stopPullDownRefresh();
   },
   onShow () {
     var _this = this;
     wx.cloud.init();
-
-    // // 获取用户信息
-    // wx.getSetting({ // 获取用户设置 
-    //   success (res) {
-    //     if (res.authSetting['scope.userInfo']) { // 检查userInfo授权
-    //       wx.getUserInfo({
-    //             success (res) {                 
-    //               console.log(res)
-    //               // 处理openId
-    //             }
-    //           })
-    //     } else {
-    //       wx.navigateTo({url: '/pages/prompt/main'})
-    //     }
-    //   }
-    // })
-
     // 调用云函数,获取openid
     wx.cloud.callFunction({
       name: 'getOpenId',
@@ -144,19 +157,7 @@ export default {
       success: res => {
         _this.openid = res.result.openid;
         // 查询数据库
-        const db = wx.cloud.database();
-        db.collection('tasks')
-        .where({
-          _openid: _this.openid 
-        })
-        .get({
-          success: function (res) {
-            _this.tasks = res.data;
-          },
-          fail (res) {
-            console.log(res.errMsg);
-          }
-        });
+        _this.getData();
       },
       fail: err => {
         console.error('err' + err);
@@ -167,9 +168,6 @@ export default {
 </script>
 
 <style scoped>
-/* page{ 无效
-  background-color:rgb(240,240,240);
-} */
 #index{
   background-color:rgb(240,240,240);
 }

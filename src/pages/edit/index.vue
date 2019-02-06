@@ -3,10 +3,10 @@
 		<form action="" class="data">
       <div class="space"></div>
 			<input type="text" class="task_name control" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">
-      <textarea name="detail" class='control' id="detail"  v-model="detail" placeholder="任务详情"></textarea>
-      <div class='switch control'>不限时间范围<switch @change="allTime"  :checked="long_term"/></div>
+      <textarea name="detail" class='control' id="detail"  v-model="detail" placeholder="任务详情" maxlength=500 ></textarea>
+      <div class='switch control'>不限时间范围<switch @change="allTime" :value="long_trem" :checked="long_term"/></div>
 			<div :class="{pick:true, control:true, dispick:long_term}">
-				<picker class="picker" mode="date" :value="start_date" @change="change_sd" :disabled="long_term">
+				<picker class="picker" mode="date" @change="change_sd" :disabled="long_term">
 				    开始时间：{{start_date}}
 				</picker>&nbsp;&nbsp;
 				<picker class="picker" mode="time" :value="start_time" @change="change_st" :disabled="long_term">
@@ -14,10 +14,10 @@
 				</picker>
 			</div>
 			<div :class="{pick:true, control:true, dispick:long_term}">				
-				<picker class="picker" mode="date" :value="end_date" @change="change_ed" :disabled="long_term">
+				<picker class="picker" mode="date" :value="end_date" @change="change_ed" :disabled="long_term" :start="start_date">
 				    结束时间：{{end_date}}
 				</picker>&nbsp;&nbsp;
-				<picker class="picker" mode="time" :value="end_time" @change="change_et" :disabled="long_term">
+				<picker class="picker" mode="time" :value="end_time" @change="change_et" :disabled="long_term" >
 				    {{end_time}}
 				</picker>
 			</div>
@@ -33,7 +33,7 @@ import getTime from '../../components/getTime.js';
 export default{
   data () {
     return {
-      // task_data: { },
+      task_data: {},
       long_term: false,
       task_name: '',
       start_date: '',
@@ -58,7 +58,11 @@ export default{
   	  this.end_date = e.mp.detail.value;
   	},
   	change_et (e) {
-  	  this.end_time = e.mp.detail.value;
+      if (this.start_date === this.end_date && e.mp.detail.value < this.start_time) {
+        this.end_time = this.start_time;
+      } else {
+        this.end_time = e.mp.detail.value;
+        }
   	},
     allTime (e) {
       this.long_term = e.mp.detail.value;
@@ -68,8 +72,18 @@ export default{
       }
     },
     initTime () {
-      this.start_date = this.end_date = getTime().split(' ')[0];
-      this.start_time = this.end_time = getTime().split(' ')[1];      
+      let time = new Date();
+      time.setHours(time.getHours() + 1);
+      this.start_date = getTime().split(' ')[0];
+      this.start_time = getTime().split(' ')[1];
+      this.end_date = getTime(time).split(' ')[0];
+      this.end_time = getTime(time).split(' ')[1];
+    },
+    init () {
+      // init all data
+      [this.task_name, this.long_term, this.detail] = ['', false, ''];
+      delete this.id;
+      this.initTime();
     },
     // 保存
     save () {
@@ -79,13 +93,13 @@ export default{
         let data = {
           task_name: this.task_name,
           long_term: this.long_term,
-          // finished: false,
+          finished: false,
           start_time: this.start_date + ' ' + this.start_time,
           end_time: this.end_date + ' ' + this.end_time,
           create_time: createTime,
           detail: this.detail
         };
-        console.log(this.detail);
+        // console.log(this.detail);
         if (this.id) { // 更新
           tasks.doc(this.id).update({
             data   
@@ -122,6 +136,7 @@ export default{
   },
   onLoad (options) {
     if (options.id) {
+      console.log(options.id);
       // 导入任务内容
       this.id = options.id;
       this.task_name = options.task_name;
@@ -134,8 +149,8 @@ export default{
         this.end_time = options.end_time.split(' ')[1];
       }
     } else {
-      // 初始化时间
-      this.initTime();
+      // 初始化
+      this.init();
     }
     this.windowHeight = wx.getSystemInfoSync().windowHeight;
   },
@@ -168,8 +183,6 @@ export default{
 .task_name{
   border-top:1px solid rgb(240,240,240);
   border-bottom: 1px solid rgb(240,240,240);
-  /* margin-top:5px 0; */
-  /* padding:5px; */
   background-color: rgb(255,255,255)
 }
 .switch{
@@ -180,10 +193,8 @@ export default{
 }
 switch{
   margin-bottom:4px;
-  /* border:1px solid #000; */
 }
 .pick{
-  /* padding:0 5px 5px; */
   border-bottom: 1px solid rgb(240,240,240);
 }
 .dispick{
@@ -195,7 +206,7 @@ switch{
 #detail{
   background-color: #FFF;
   width:100%;
-  height:100px;
+  height:140px;
 }
 .save{
   position:absolute;

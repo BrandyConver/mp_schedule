@@ -1,11 +1,38 @@
-// 云函数入口文件
-// const cloud = require('wx-server-sdk')
+// 批量操作task server端使用promise函数
+const cloud = require('wx-server-sdk')
+cloud.init()
+const db = cloud.database()
+exports.main = async (event, context) => {
+  let ids = event.ids;
+  let operation = event.operation;
+  // 使用db.command查询指令查询ids
+  const dbcmd = db.command;
 
-// cloud.init()
+  // 批量删除
+  if (operation=='remove'){
+    try {
+      return await db.collection('tasks').where({
+        _id: dbcmd.in(ids)
+      }).remove()
+    } catch (e) {
+      console.error(e)
+    }
 
-// 云函数入口函数
-exports.main =  (event, context) => {
-  return event;
-}
-
-// rrError: errCode: -404011 cloud function execution error | errMsg: cloud.callFunction:fail requestID db5cfa87-27b9-11e9-bf3a-52540025df0e, cloud function service error code -504002, error message Cannot find module 'wx-server-sdk'; at cloud.callFunction api; 
+    // 批量完成
+  } else if (operation=="finish") {
+    try {
+      return await db.collection('tasks').where({
+        _id: dbcmd.in(ids)
+      })
+        .update({
+          data: {
+            finished: true
+          },
+        })
+    } catch (e) {
+      console.error(e)
+    }
+  } else {
+    console.error("incorrect operation");
+  }
+};

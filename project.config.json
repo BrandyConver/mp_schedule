@@ -12,6 +12,7 @@
 	"appid": "wx62021cbe5853225b",
 	"projectname": "mp_schedule",
 	"cloudfunctionRoot": "cloud-functions/",
+	"libVersion": "2.5.2",
 	"condition": {
 		"search": {
 			"current": -1,
