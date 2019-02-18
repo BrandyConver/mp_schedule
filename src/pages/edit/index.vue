@@ -22,8 +22,6 @@
 				</picker>
 			</div>
 
-
-
 		</form>
 		<div class="save"><button @click="save">保存</button></div>
 	</div>
@@ -42,7 +40,7 @@ export default{
       end_time: '',
       create_time: '',
       detail: '',
-      windowHeight: '600px',
+      windowHeight: wx.getSystemInfoSync().windowHeight,
       isSave: false
     }
   },
@@ -66,7 +64,6 @@ export default{
   	},
     allTime (e) {
       this.long_term = e.mp.detail.value;
-      console.log(this.long_term)
       if (!this.long_term) {
         this.initTime();
       }
@@ -80,7 +77,6 @@ export default{
       this.end_time = getTime(time).split(' ')[1];
     },
     init () {
-      // init all data
       [this.task_name, this.long_term, this.detail] = ['', false, ''];
       delete this.id;
       this.initTime();
@@ -88,7 +84,6 @@ export default{
     // 保存
     save () {
       if (this.task_name !== '') {
-        let createTime = getTime();
         const tasks = wx.cloud.database().collection('tasks');
         let data = {
           task_name: this.task_name,
@@ -96,15 +91,17 @@ export default{
           finished: false,
           start_time: this.start_date + ' ' + this.start_time,
           end_time: this.end_date + ' ' + this.end_time,
-          create_time: createTime,
+          create_time: getTime(),
           detail: this.detail
         };
-        // console.log(this.detail);
+        if (data.long_term === true) {
+          data.start_time = '';
+          data.end_time = '';
+        }
         if (this.id) { // 更新
           tasks.doc(this.id).update({
             data   
           }).then(function (res) {
-            console.log(res);
           });
         } else { // 添加
           tasks.add({
@@ -118,7 +115,6 @@ export default{
             function (res) {
               console.log(res);
             })
-            //
         }
         // 返回主页
         wx.navigateBack({
@@ -135,24 +131,27 @@ export default{
     }
   },
   onLoad (options) {
+    // 导入任务内容
     if (options.id) {
-      console.log(options.id);
-      // 导入任务内容
       this.id = options.id;
       this.task_name = options.task_name;
-      this.detail = options.detail;
-      this.long_term = options.long_term;
-      if (options.long_term) {
+      if (options.long_term === 'false' || options.long_term === undefined) {
+        this.long_term = false;
         this.start_date = options.start_time.split(' ')[0];
         this.start_time = options.start_time.split(' ')[1];
         this.end_date = options.end_time.split(' ')[0];
         this.end_time = options.end_time.split(' ')[1];
+      } else {
+        this.long_term = true;
       }
+      // 用localStorage存储detail,过长的detail会在url中丢失
+      wx.getStorage({
+        key: 'detail',
+        success: res => { this.detail = res.data }
+      });
     } else {
-      // 初始化
       this.init();
     }
-    this.windowHeight = wx.getSystemInfoSync().windowHeight;
   },
   onUnload () {
     // if (this.task_name.value !== '') {

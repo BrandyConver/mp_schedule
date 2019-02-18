@@ -3,7 +3,8 @@
     "pages/index/main",
     "pages/edit/main",
     "pages/detail/main",
-    "pages/finished/main"
+    "pages/finished/main",
+    "pages/statistic/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

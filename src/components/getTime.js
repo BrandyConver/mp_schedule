@@ -1,4 +1,7 @@
 function getTime (now = new Date()) {
+  if (typeof now === 'number') {
+    now = new Date(now);
+  }
   let nowMonth = now.getMonth() + 1;
   let nowDate = now.getDate();
   let nowHours = now.getHours();

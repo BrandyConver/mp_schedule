@@ -1,16 +1,25 @@
 <template>
-  <div id="detail">
-    <div>
-      <!-- <view>{{task.task_name}}</view>
-      <view>创建时间:{{task.create_time}}</view>
-      <view class="time">{{task.start_time}}~{{task.end_time}}</view>
-      <view>long_term:{{task.long_term}}</view> -->
+  <div id="detail" :style="{minHeight:windowHeight -10 + 'px'}">
+    <div class="task_content">
+      <div class="task_name">{{task.task_name}}</div>
+      <div class="detail">
+        <span>任务详情：</span>
+        <div >{{task.detail}}</div>
+      </div>
+      <div v-if="task.long_term">
+        <div class="sp_ard"><span>任务时间：</span><span>长期任务</span></div>
+      </div>
+      <div>
+        <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
+        <div class="sp_ard"><span>结束时间:</span><span>{{task.end_time}}</span></div>
+      </div>
 
-      <view v-for="(value,key) in task" :key="item">{{key}}:{{value}}</view>
-      <!-- <view>detail:{{task.detail}}</view> -->
+
+      <div class="sp_ard"><span>修改时间:</span><span>{{task.create_time}}</span>  </div>
+
     </div>
 
-    <div class="button">
+    <div class="buttons">
       <button @click="toEdit">编辑</button>
       <button @click="delet">删除</button> 
     </div>
@@ -18,19 +27,21 @@
 </template>
 
 <script>
+
 export default {
   components: {
   },
   data () {
     return {
       task: {
-      }
+      },
+      windowHeight: wx.getSystemInfoSync().windowHeight
     }
   },
   methods: {
     // 删除任务
     delet () {
-      let _this = this
+      let _this = this;
       wx.showModal({
         title: '提示',
         content: '确认删除这项任务',
@@ -47,17 +58,29 @@ export default {
               }
             })
             wx.navigateBack({
-              delta: 9
+              delta: 1
             })
           }
         }
-      })
+      });
     },
     // 跳转到编辑页 并传递任务详细内容
     toEdit () { // 存入缓存 pending
-      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}&detail=${this.task.detail}&long_term=${this.task.long_term}`
-      wx.redirectTo({url})
+      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}&detail=${this.task.detail}&long_term=${this.task.long_term}`;
+      wx.redirectTo({url});
+      wx.setStorage({
+        key: 'detail',
+        data: this.task.detail
+      })
     }
+  },
+  onShareAppMessage (res) {
+    return {
+      title: this.task.task_name
+    }
+  },
+  onShow (shrtic) {
+    // console.log(shrtic);
   },
   onLoad (options) {
     // 查询数据库
@@ -68,24 +91,56 @@ export default {
     tasks.doc(_this.id)
     .get({  
       success: function (res) {
-        _this.task = res.data
+        _this.task = res.data;
       }
+    });
+    wx.showShareMenu({
+      withShareTicket: true
     })
   }
 }
 </script>
 
 <style>
-.time{
-  color: rgb(90,90,90)
+#detail{
+  background-color: rgb(240,240,240);
+  border: 1px solid rgb(240,240,240);
+  font-size: 20px;
 }
-.button{
+.task_content>div{
+  margin:10px 0;
+}
+.sp_ard{
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+  margin:10px 0;
+  padding:8px 0;
+}
+.task_name{
+  text-align: center;
+  font-size: 24px;
+  font-size:100%;
+}
+.detail>span{
+  padding:0 20px;
+}
+.detail>div{
+  font-size: 18px;
+  white-space: pre-wrap;
+  height: 140px;
+  line-height: 34px;
+  overflow:auto;
+  background-color: #fff;
+  padding:10px 10px;
+}
+.buttons{
   position: fixed;
   bottom:0;
   width:100%;
   display: flex;
 }
-.button>button{
+.buttons>button{
   flex:1;
 }
 button:nth-child(2){
