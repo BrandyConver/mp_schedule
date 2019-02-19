@@ -4,7 +4,8 @@
     "pages/edit/main",
     "pages/detail/main",
     "pages/finished/main",
-    "pages/statistic/main"
+    "pages/statistics/main",
+    "pages/localSetting/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
