@@ -13,10 +13,13 @@
       </div>
     </div>        
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">当前列表为空</div>
-    <!-- 悬浮按钮 -->
-    <div class="float_tip"  :style="{'display': floatTip.isShow?'block':'none','left':floatTip.x + 'px', 'top':floatTip.y + 'px' }" @tap="restore">
+    <!-- 悬浮按钮 注意不能超出屏幕 -->
+    <!-- <div class="float_tip"  :style="{visibility: floatTip.isShow?'visible':'hidden',left:floatTip.x -50 + 'px', top:floatTip.y -30 + 'px' }" @tap="restore">
+      还原 | 删除
+    </div> -->
+    <div class="float_tip" v-show="floatTip.isShow" :style="tipStyle" @tap="restore">
       还原
-    </div>
+    </div>    
   </div>
 </template>
 
@@ -84,14 +87,13 @@ export default {
     },
     tip (e, id) {
       console.log(e.mp.detail);
-      this.restore(id);
       this.floatTip = {
         selected: id,
         x: e.mp.detail.x,
         y: e.mp.detail.y,
         isShow: true 
       };
-      console.log(this.floatTip.x);
+      console.log(this.floatTip.isShow);
     },
     restore (id) {
       console.log(id);
@@ -99,6 +101,7 @@ export default {
       this.hideTip();
     },
     hideTip () {
+      console.log('hide')
       this.floatTip = {
         selected: '',
         isShow: false
@@ -110,6 +113,15 @@ export default {
     fintasks () {
       // use unfin task instead of v-if with v-for
       return this.tasks.filter(task => task.finished === true);
+    },
+    tipStyle () {
+      console.log('tipstyle')
+      return {
+        position: 'absolute',
+        top: this.floatTip.y + 'px',
+        left: this.floatTip.x + 'px',
+        display: 'blcok'
+      }
     }
   },
   onLoad () {
@@ -179,9 +191,14 @@ export default {
   color:blue;
 }
 .float_tip{
-  visibility:hidden;
   position:absolute;
-  left:0;
-  top:0;
+  display: flex;
+  left:20;
+  top:20;
+  width:100px;
+  height:30px;
+  background-color: #fff;
+  border-radius:5px;
+  box-shadow:#666 0 0 8px 2px;
 }
 </style>
