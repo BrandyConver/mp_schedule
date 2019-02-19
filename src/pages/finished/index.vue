@@ -68,7 +68,7 @@ export default {
     search (e) {
       let word = new RegExp(e.mp.detail.value.trim(), 'ig');
       console.log(word)
-      let result = this.tasks.filter(task => task.task_name.search(word) > 0);
+      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
       this.tasks = result;
     },
     clear (e) {
@@ -103,7 +103,7 @@ export default {
         selected: '',
         isShow: false
       };
-      console.log(this.floatTip);
+      // console.log(this.floatTip);
     }
   },
   computed: {
