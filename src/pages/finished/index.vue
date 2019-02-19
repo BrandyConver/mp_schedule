@@ -1,10 +1,10 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideMenu">
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideTip">
     <div class='searchbox'>
       <input type="text" comfirm-type='search' placeholder="搜索" @confirm='search' class='search' @input="clear">
     </div>
     <div v-if="tasks.length>0" class="task_list" >
-      <div class="task" :class="{ltt:task.long_term}" v-for="task of fintasks" :key="task._id" @click="toDetail(task._id)" @longpress="toRestore($event, task._id)">
+      <div class="task" :class="{ltt:task.long_term}" v-for="task of fintasks" :key="task._id" @click="toDetail(task._id)" @longpress="tip($event, task._id)">
         <div class="task_name">{{task.task_name}}</div>
         <div class="task_time">
           <span v-if="task.long_term" class="long_term">长期任务</span>
@@ -14,7 +14,7 @@
     </div>        
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">当前列表为空</div>
     <!-- 悬浮按钮 -->
-    <div class="float_tip" v-show="false" @tap="restore">
+    <div class="float_tip"  :style="{'display': floatTip.isShow?'block':'none','left':floatTip.x + 'px', 'top':floatTip.y + 'px' }" @tap="restore">
       还原
     </div>
   </div>
@@ -32,7 +32,12 @@ export default {
       timecolor: ['blue', 'rgb(120,20,20)'],
       time: getTime(),
       windowHeight: '',
-      selected: ''
+      floatTip: {
+        x: 0,
+        y: 0,
+        selected: '',
+        isShow: false
+      }
     }
   },
   methods: {
@@ -63,7 +68,7 @@ export default {
     search (e) {
       let word = new RegExp(e.mp.detail.value.trim(), 'ig');
       console.log(word)
-      let result = this.tasks.filter(task => task.task_name.search(word) > 0);
+      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
       this.tasks = result;
     },
     clear (e) {
@@ -77,12 +82,28 @@ export default {
         })
       }
     },
-    toRestore (e, id) {
-      console.log(e)
+    tip (e, id) {
+      console.log(e.mp.detail);
       this.restore(id);
+      this.floatTip = {
+        selected: id,
+        x: e.mp.detail.x,
+        y: e.mp.detail.y,
+        isShow: true 
+      };
+      console.log(this.floatTip.x);
     },
     restore (id) {
       console.log(id);
+      // 还原task 初始化floatTip
+      this.hideTip();
+    },
+    hideTip () {
+      this.floatTip = {
+        selected: '',
+        isShow: false
+      };
+      // console.log(this.floatTip);
     }
   },
   computed: {
@@ -156,5 +177,11 @@ export default {
 }
 .long_term{
   color:blue;
+}
+.float_tip{
+  visibility:hidden;
+  position:absolute;
+  left:0;
+  top:0;
 }
 </style>
