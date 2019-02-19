@@ -1,9 +1,9 @@
 <template>
-  <div id="index" :style="{minHeight:minHeight + 'px'}" @click="hideMenu">
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideMenu">
     <div v-show="!multi">
       <div v-if="tasks.length>0" class="task_list" >
         <div class='space'></div>
-        <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
+        <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" v-if="!task.finished" @click="toDetail(task._id)" @longpress="multi=true">
           <div class="task_name">{{task.task_name}}</div>
           <div class="task_time">
             <span v-if="task.long_term" class="long_term">长期任务</span>
@@ -11,14 +11,14 @@
           </div>
         </div>
       </div>        
-      <div v-else class='no_task' :style="{minHeight:minHeight + 'px'}">没有未完成的任务</div>
+      <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">没有未完成的任务</div>
       <div class='space'></div>
     </div>
     
     <div v-show="multi" class="task_list " >
       <div class='space'></div>
       <checkbox-group  @change="select">
-        <div class="task" v-for="task of tasks" :key="task._id">
+        <div class="task" v-for="task of tasks" :key="task._id" v-if="!task.finished" >
             <label :for="task._id" class="checkbox_label">
               <checkbox :id="task._id" :value="task._id"  />
               <div class="check_body">
@@ -48,6 +48,7 @@
         <div @click="multi=false">取消</div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -59,11 +60,12 @@ export default {
   data () {
     return {
       tasks: [],
+      isAuth: true,
       openid: '',
       appid: 'wx62021cbe5853225b',
       timecolor: ['blue', 'rgb(120,20,20)'],
       time: getTime(),
-      minHeight: '',
+      windowHeight: '',
       showMenu: false,
       multi: false,
       selected: []
@@ -113,6 +115,7 @@ export default {
       });
     },
     finish () {
+      let _this = this;
       wx.cloud.callFunction({
         name: 'multi',
         data: {
@@ -120,7 +123,8 @@ export default {
           operation: 'finish'
         }
       }).then(res => {
-          this.getData(0, 'refresh');
+          _this.getData(0, 'refresh');
+          console.log('test:126' + res.toString())
         }).catch(err => {
           console.error('err' + err);
         });
@@ -131,22 +135,21 @@ export default {
       wx.navigateTo({url: '/pages/finished/main'})
     },
     getData (skip = 0, type = 'refresh') {
+      let _this = this;
       const db = wx.cloud.database();
       db.collection('tasks').where({
-        _openid: this.openid,
-        finished: false
+        _openid: this.openid 
       }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc').skip(skip).get()
       .then(res => {
         if (type === 'load') {
-          this.tasks = this.tasks.concat(res.data);
+          _this.tasks = _this.tasks.concat(res.data);
         } else {
-          this.tasks = res.data;
+          _this.tasks = res.data;
         }
       }).catch(res => {
         console.log(res.errMsg);
       });
     },
-    // 待添加到onload
     createDefaultTask () {
       // 首次使用,添加一个默认task
       wx.getStorage({
@@ -157,6 +160,7 @@ export default {
             key: 'hasUsed',
             data: 'hasUsed'
           });
+          // 注释这段代码出错，先wx.clearStorage()
           wx.cloud.database.collection('tasks').add({
             data: {
               task_name: '使用说明',
@@ -175,24 +179,22 @@ export default {
     }
   },
   computed: {
-    // filter tasks which was finished
     unfinTasks () {
-      return this.tasks.filter(task => task.finished === false);
+      return this.tasks;
+      // use unfin task instead of v-if with v-for
     }
   },
   onLoad () {
     wx.cloud.init();
-    // 获取高度，存入store
+
+    // 从store获取窗口高度
     store.commit('setHeight', wx.getSystemInfoSync().windowHeight);
-    this.minHeight = store.state.minHeight;
+    this.windowHeight = store.state.minHeight;
   },
-  // 下拉刷新
   onPullDownRefresh () {
     this.getData(0, 'refresh');
     wx.stopPullDownRefresh();
-    this.time = getTime();
   },
-  // 触底加载更多
   onReachBottom () {
     if (this.tasks.length < this.total) {
       this.getData(this.tasks.length, 'load');
@@ -209,8 +211,7 @@ export default {
       const db = wx.cloud.database();
       // 查询数据库
       db.collection('tasks').where({
-        _openid: this.openid,
-        finished: false
+        _openid: this.openid 
       }).count().then(res => {
         this.total = res.total;
       });
