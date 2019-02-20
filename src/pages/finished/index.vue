@@ -14,12 +14,9 @@
     </div>        
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">当前列表为空</div>
     <!-- 悬浮按钮 注意不能超出屏幕 -->
-    <!-- <div class="float_tip"  :style="{visibility: floatTip.isShow?'visible':'hidden',left:floatTip.x -50 + 'px', top:floatTip.y -30 + 'px' }" @tap="restore">
-      还原 | 删除
-    </div> -->
-    <div class="float_tip" v-show="floatTip.isShow" :style="tipStyle" @tap="restore">
-      还原
-    </div>    
+    <div class="float_tip"  :style="{visibility: floatTip.isShow?'visible':'hidden',left:position.x, top:position.y }" >
+      <span @tap="restore">还原</span><span @tap="del">删除</span>
+    </div>
   </div>
 </template>
 
@@ -95,9 +92,13 @@ export default {
       };
       console.log(this.floatTip.isShow);
     },
-    restore (id) {
-      console.log(id);
+    restore () {
+      console.log(this.floatTip.selected);
       // 还原task 初始化floatTip
+      this.hideTip();
+    },
+    del () {
+      console.log(this.floatTip.selected);
       this.hideTip();
     },
     hideTip () {
@@ -117,10 +118,17 @@ export default {
     tipStyle () {
       console.log('tipstyle')
       return {
-        position: 'absolute',
         top: this.floatTip.y + 'px',
-        left: this.floatTip.x + 'px',
-        display: 'blcok'
+        left: this.floatTip.x + 'px'
+      }
+    },
+    // 计算提示框位置
+    position () {
+      let x = this.floatTip.x;
+      let y = this.floatTip.y;
+      return {
+        y: y + 'px',
+        x: x + 'px'
       }
     }
   },
@@ -129,11 +137,13 @@ export default {
     this.openid = store.state.openid;
     this.windowHeight = store.state.minHeight;
   },
+  // 下拉刷新
   onPullDownRefresh () {
     this.getData(0, 'refresh');
     wx.stopPullDownRefresh();
     this.time = getTime();
   },
+  // 上拉加载
   onReachBottom () {
     if (this.tasks.length < this.total) {
       this.getData(this.tasks.length, 'load');
@@ -193,12 +203,13 @@ export default {
 .float_tip{
   position:absolute;
   display: flex;
-  left:20;
-  top:20;
-  width:100px;
-  height:30px;
+  justify-content: space-around;
+  left: 20px;
+  top: 20px;
+  width: 100px;
+  height: 30px;
   background-color: #fff;
-  border-radius:5px;
-  box-shadow:#666 0 0 8px 2px;
+  border-radius: 5px;
+  box-shadow: #666 0 0 8px 2px;
 }
 </style>
