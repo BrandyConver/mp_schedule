@@ -182,9 +182,15 @@ export default {
   },
   onLoad () {
     wx.cloud.init();
-    // 获取高度，存入store
-    store.commit('setHeight', wx.getSystemInfoSync().windowHeight);
-    this.minHeight = store.state.minHeight;
+    // 获取屏幕高度宽度，存入store
+    // store 添加屏幕宽度属性
+    wx.getSystemInfo({
+      success (res) {
+        store.commit('setHeight', res.windowHeight);
+        store.commit('setWidth', res.windowWidth);
+      }
+    })
+    this.minHeight = store.state.deviceHeight;
   },
   // 下拉刷新
   onPullDownRefresh () {
