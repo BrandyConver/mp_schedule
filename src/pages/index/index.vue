@@ -187,10 +187,10 @@ export default {
     wx.getSystemInfo({
       success (res) {
         store.commit('setHeight', res.windowHeight);
-        store.commit('setHeight', res.windowHeight);
+        store.commit('setWidth', res.windowWidth);
       }
     })
-    this.minHeight = store.state.minHeight;
+    this.minHeight = store.state.deviceHeight;
   },
   // 下拉刷新
   onPullDownRefresh () {
