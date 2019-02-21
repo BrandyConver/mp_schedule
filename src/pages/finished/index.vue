@@ -51,7 +51,7 @@ export default {
       db.collection('tasks').where({
         _openid: this.openid,
         finished: true
-      }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc').skip(skip).get()
+      }).orderBy('long_term', 'asc').orderBy('end_time', 'desc').orderBy('task_name', 'asc').skip(skip).get()
       .then(res => {
         if (type === 'load') {
           this.tasks = this.tasks.concat(res.data);
@@ -68,7 +68,6 @@ export default {
     },
     search (e) {
       let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      console.log(word)
       let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
       this.tasks = result;
     },
@@ -84,7 +83,6 @@ export default {
       }
     },
     tip (e, id) {
-      console.log(e.mp.detail);
       this.floatTip = {
         selected: id,
         x: e.mp.detail.x,
@@ -94,23 +92,25 @@ export default {
     },
     restore () {
       // 还原task 初始化floatTip
-      console.log(this.floatTip.selected);
       wx.cloud.database().collection('tasks').doc(this.floatTip.selected).update({
         data: {
           finished: false
         }
-      })
-      .then(res => { console.log(res.errMsg) })
-      .catch(res => { console.log(res.errMsg) });
+      }).then(res => {       
       this.getData();
       this.hideTip();
+      }).catch(res => {
+        console.log(res.errMsg)
+      });
     },
     del () {
       wx.cloud.database().collection('tasks').doc(this.floatTip.selected).remove()
-      .then(res => { console.log(res.errMsg) })
-      .catch(res => { console.log(res.errMsg) });
+      .then(res => {       
       this.getData();
       this.hideTip();
+      }).catch(res => {
+        console.log(res.errMsg)
+      });
     },
     hideTip () {
       this.floatTip = {
@@ -136,12 +136,10 @@ export default {
     }
   },
   onLoad () {
-    // 从store获取窗口高度
+    // 从store读取相关信息
     this.openid = store.state.openid;
     this.windowHeight = store.state.deviceHeight;
     this.windowWidth = store.state.deviceWidth;
-    console.log(this.windowHeight);
-    console.log(this.windowWidth);
   },
   // 下拉刷新
   onPullDownRefresh () {

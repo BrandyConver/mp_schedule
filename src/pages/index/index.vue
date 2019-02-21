@@ -15,12 +15,12 @@
       <div class='space'></div>
     </div>
     
-    <div v-show="multi" class="task_list " >
+    <div v-if="multi" class="task_list " >
       <div class='space'></div>
       <checkbox-group  @change="select">
         <div class="task" v-for="task of tasks" :key="task._id">
             <label :for="task._id" class="checkbox_label">
-              <checkbox :id="task._id" :value="task._id"  />
+              <checkbox :id="task._id" :value="task._id" :checked="false" />
               <div class="check_body">
                 <div class="task_name">{{task.task_name}}</div>
                 <div class="task_time">
@@ -39,13 +39,13 @@
       <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
       <div v-if="showMenu" class='menu'>
         <div class="menuli" @click="toFinished">查看完成</div>
-        <div class="menuli"><a href='../statistic/main'>任务总览</a></div>
+        <div class="menuli"><a href='../statistics/main'>任务总览</a></div>
         <div class="menuli">更多设置</div>
       </div>
       <div class="multi_btn" v-if="multi">
         <div @click="remove">删除</div>
         <div @click="finish">标记完成</div>
-        <div @click="multi=false">取消</div>
+        <div @click="multi=false; selected = []">取消</div>
       </div>
     </div>
   </div>
@@ -107,7 +107,7 @@ export default {
                 console.error('err' + err);
               });
             _this.multi = false;
-            _this.selected = undefined;
+            _this.selected = [];
           }
         }
       });
@@ -125,7 +125,7 @@ export default {
           console.error('err' + err);
         });
       this.multi = false;
-      this.selected = undefined;
+      this.selected = [];
     },
     toFinished () {
       wx.navigateTo({url: '/pages/finished/main'})
@@ -146,21 +146,24 @@ export default {
         console.log(res.errMsg);
       });
     },
-    // 待添加到onload
+    // 首次使用,添加一个默认task
     createDefaultTask () {
-      // 首次使用,添加一个默认task
       wx.getStorage({
         key: 'hasUsed',
         fail (res) {
-          console.log('首次使用' + res);
+          console.log('首次使用');
           wx.setStorage({
             key: 'hasUsed',
             data: 'hasUsed'
           });
-          wx.cloud.database.collection('tasks').add({
+          wx.cloud.database().collection('tasks').add({
             data: {
-              task_name: '使用说明',
-              detail: 'detail',
+              task_name: '小程序使用说明',
+              detail: `1.新建任务：点击主页右下角"+"键可创建新任务。
+2.多选操作：在主页屏幕长按进入多选，可批量标记完成或删除任务。
+3.主页左下角 菜单键->查看完成 可查看历史任务，长按任务可操作单个任务。
+4.长期任务有背景颜色，任务已过结束时间，其时间显示颜色会改变`,
+              // 5.更多设置中可进行个人样式设置
               long_term: false,
               start_time: getTime(),
               end_time: getTime(Date.now() + 3600000),
@@ -189,7 +192,8 @@ export default {
         store.commit('setHeight', res.windowHeight);
         store.commit('setWidth', res.windowWidth);
       }
-    })
+    });
+    this.createDefaultTask();
     this.minHeight = store.state.deviceHeight;
   },
   // 下拉刷新
