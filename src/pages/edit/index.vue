@@ -47,10 +47,15 @@ export default{
   methods: {
     // 从picker组件读取时间日期
   	change_sd (e) {
-  	  this.start_date = e.mp.detail.value;
+      this.start_date = e.mp.detail.value;
+      this.end_date = this.end_date < this.start_date ? this.start_date : this.end_date;
   	},
   	change_st (e) {
       this.start_time = e.mp.detail.value;
+      if (this.end_date === this.start_date && this.end_time < this.start_time) {
+        this.end_time = this.start_time;
+        console.log(this.end_time);
+      }
   	},
   	change_ed (e) {
   	  this.end_date = e.mp.detail.value;

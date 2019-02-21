@@ -4,7 +4,8 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     detail: '',
-    minHeight: '',
+    deviceHeight: '',
+    deviceWidth: '',
     openid: '',
     Setting: {
       longTermColor: 'lightgreen',
@@ -13,7 +14,10 @@ const store = new Vuex.Store({
   },
   mutations: {
     setHeight (state, value) {
-      state.minHeight = value;
+      state.deviceHeight = value;
+    },
+    setWidth (state, value) {
+      state.deviceWidth = value;
     },
     setDetail (state, value) {
       state.detail = value;
@@ -23,4 +27,4 @@ const store = new Vuex.Store({
     }
   }
 });
-export default store
+export default store;

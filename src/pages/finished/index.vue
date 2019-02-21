@@ -1,10 +1,10 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click="hideTip">
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @click.stop="hideTip">
     <div class='searchbox'>
       <input type="text" comfirm-type='search' placeholder="搜索" @confirm='search' class='search' @input="clear">
     </div>
     <div v-if="tasks.length>0" class="task_list" >
-      <div class="task" :class="{ltt:task.long_term}" v-for="task of fintasks" :key="task._id" @click="toDetail(task._id)" @longpress="tip($event, task._id)">
+      <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="tip($event, task._id)">
         <div class="task_name">{{task.task_name}}</div>
         <div class="task_time">
           <span v-if="task.long_term" class="long_term">长期任务</span>
@@ -13,7 +13,6 @@
       </div>
     </div>        
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">当前列表为空</div>
-    <!-- 悬浮按钮 注意不能超出屏幕 -->
     <div class="float_tip"  :style="{visibility: floatTip.isShow?'visible':'hidden',left:position.x, top:position.y }" >
       <span @tap="restore">还原</span><span @tap="del">删除</span>
     </div>
@@ -32,6 +31,7 @@ export default {
       timecolor: ['blue', 'rgb(120,20,20)'],
       time: getTime(),
       windowHeight: '',
+      windowWidth: '',
       floatTip: {
         x: 0,
         y: 0,
@@ -49,8 +49,9 @@ export default {
     getData (skip = 0, type = 'refresh') {
       const db = wx.cloud.database();
       db.collection('tasks').where({
-        _openid: this.openid
-      }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc').skip(skip).get()
+        _openid: this.openid,
+        finished: true
+      }).orderBy('long_term', 'asc').orderBy('end_time', 'desc').orderBy('task_name', 'asc').skip(skip).get()
       .then(res => {
         if (type === 'load') {
           this.tasks = this.tasks.concat(res.data);
@@ -67,7 +68,6 @@ export default {
     },
     search (e) {
       let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      console.log(word)
       let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
       this.tasks = result;
     },
@@ -83,49 +83,52 @@ export default {
       }
     },
     tip (e, id) {
-      console.log(e.mp.detail);
       this.floatTip = {
         selected: id,
         x: e.mp.detail.x,
         y: e.mp.detail.y,
         isShow: true 
       };
-      console.log(this.floatTip.isShow);
     },
     restore () {
-      console.log(this.floatTip.selected);
       // 还原task 初始化floatTip
+      wx.cloud.database().collection('tasks').doc(this.floatTip.selected).update({
+        data: {
+          finished: false
+        }
+      }).then(res => {       
+      this.getData();
       this.hideTip();
+      }).catch(res => {
+        console.log(res.errMsg)
+      });
     },
     del () {
-      console.log(this.floatTip.selected);
+      wx.cloud.database().collection('tasks').doc(this.floatTip.selected).remove()
+      .then(res => {       
+      this.getData();
       this.hideTip();
+      }).catch(res => {
+        console.log(res.errMsg)
+      });
     },
     hideTip () {
-      console.log('hide')
       this.floatTip = {
         selected: '',
         isShow: false
       };
-      // console.log(this.floatTip);
     }
   },
   computed: {
-    fintasks () {
-      // use unfin task instead of v-if with v-for
-      return this.tasks.filter(task => task.finished === true);
-    },
-    tipStyle () {
-      console.log('tipstyle')
-      return {
-        top: this.floatTip.y + 'px',
-        left: this.floatTip.x + 'px'
-      }
-    },
     // 计算提示框位置
     position () {
-      let x = this.floatTip.x;
-      let y = this.floatTip.y;
+      let x = this.floatTip.x - 60;
+      if (x < 0) {
+        x = 0;
+      } else if (x + 120 > this.windowWidth) {
+        x = this.windowWidth - 120;
+      }
+      let y = this.floatTip.y - 40;
       return {
         y: y + 'px',
         x: x + 'px'
@@ -133,9 +136,10 @@ export default {
     }
   },
   onLoad () {
-    // 从store获取窗口高度
+    // 从store读取相关信息
     this.openid = store.state.openid;
-    this.windowHeight = store.state.minHeight;
+    this.windowHeight = store.state.deviceHeight;
+    this.windowWidth = store.state.deviceWidth;
   },
   // 下拉刷新
   onPullDownRefresh () {
@@ -153,7 +157,8 @@ export default {
     const db = wx.cloud.database();
     // 查询数据库
     db.collection('tasks').where({
-      _openid: this.openid 
+      _openid: this.openid,
+      finished: true
     }).count().then(res => {
       this.total = res.total;
     });
@@ -204,10 +209,13 @@ export default {
   position:absolute;
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 100;
   left: 20px;
   top: 20px;
-  width: 100px;
-  height: 30px;
+  width: 120px;
+  height: 40px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: #666 0 0 8px 2px;
