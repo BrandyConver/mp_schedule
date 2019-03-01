@@ -9,7 +9,7 @@
       <div v-if="task.long_term">
         <div class="sp_ard"><span>任务时间：</span><span>长期任务</span></div>
       </div>
-      <div>
+      <div v-else>
         <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
         <div class="sp_ard"><span>结束时间:</span><span>{{task.end_time}}</span></div>
       </div>
@@ -20,8 +20,8 @@
     </div>
 
     <div class="buttons">
-      <button @click="toEdit">编辑</button>
-      <button @click="delet">删除</button> 
+      <span @click="toEdit"><img src="/static/icon/edit.png" alt=""></span>
+      <span @click="delet"><img src="/static/icon/del1.png" alt=""></span>
     </div>
   </div>
 </template>
@@ -84,6 +84,7 @@ export default {
   },
   onLoad (options) {
     // 查询数据库
+    wx.cloud.init();
     const tasks = wx.cloud.database().collection('tasks');
     this.tasks = tasks;
     this.id = options.id;
@@ -135,16 +136,20 @@ export default {
   padding:10px 10px;
 }
 .buttons{
+  justify-content: space-between;
   position: fixed;
   bottom:0;
   width:100%;
   display: flex;
+  background:-webkit-linear-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
+  background: linear-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
 }
-.buttons>button{
+.buttons>span{
   flex:1;
+  text-align: center;
 }
-button:nth-child(2){
-  width:50%;
-  color:#ee2233;
+.buttons img{
+  width:40px;
+  height:40px;
 }
 </style>

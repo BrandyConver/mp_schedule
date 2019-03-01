@@ -178,15 +178,10 @@ export default {
     }
   },
   computed: {
-    // filter tasks which was finished
-    unfinTasks () {
-      return this.tasks.filter(task => task.finished === false);
-    }
   },
   onLoad () {
     wx.cloud.init();
     // 获取屏幕高度宽度，存入store
-    // store 添加屏幕宽度属性
     wx.getSystemInfo({
       success (res) {
         store.commit('setHeight', res.windowHeight);
