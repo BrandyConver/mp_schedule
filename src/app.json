@@ -4,7 +4,6 @@
     "pages/edit/main",
     "pages/detail/main",
     "pages/finished/main",
-    "pages/statistics/main",
     "pages/localSetting/main"
   ],
   "window": {

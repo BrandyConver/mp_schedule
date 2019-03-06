@@ -39,8 +39,7 @@
       <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
       <div v-if="showMenu" class='menu'>
         <div class="menuli" @click="toFinished">查看完成</div>
-        <div class="menuli"><a href='../statistics/main'>任务总览</a></div>
-        <div class="menuli">更多设置</div>
+        <div class="menuli"><a href='../localSetting/main'>更多设置</a></div>
       </div>
       <div class="multi_btn" v-if="multi">
         <div @click="remove">删除</div>
