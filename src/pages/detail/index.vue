@@ -13,13 +13,10 @@
         <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
         <div class="sp_ard"><span>结束时间:</span><span>{{task.end_time}}</span></div>
       </div>
-
-
       <div class="sp_ard"><span>修改时间:</span><span>{{task.create_time}}</span>  </div>
-
     </div>
 
-    <div class="buttons">
+    <div class="buttons" v-show="isCreator">
       <span @click="toEdit"><img src="/static/icon/edit.png" alt=""></span>
       <span @click="delet"><img src="/static/icon/del1.png" alt=""></span>
     </div>
@@ -35,6 +32,7 @@ export default {
     return {
       task: {
       },
+      isCreator: true,
       windowHeight: wx.getSystemInfoSync().windowHeight
     }
   },
@@ -83,18 +81,28 @@ export default {
     // console.log(shrtic);
   },
   onLoad (options) {
-    // 查询数据库
+    console.log(options)
     wx.cloud.init();
+    // 获取访问者openid
+    const getopenid = wx.cloud.callFunction({
+      name: 'getOpenId'
+    }).then(res => res.result.openid)
+    .catch(res => res.errMsg);
     const tasks = wx.cloud.database().collection('tasks');
     this.tasks = tasks;
     this.id = options.id;
     let _this = this;
-    tasks.doc(_this.id)
-    .get({  
-      success: function (res) {
-        _this.task = res.data;
+    // 查询数据库
+    const gettask = tasks.doc(_this.id)
+    .get().then(res => {
+      _this.task = res.data;
+      return res.data._openid;
+    }).catch(res => res.errMsg);
+    Promise.all([getopenid, gettask]).then(([idresult, taskresult]) => {
+      if (idresult !== taskresult) {
+        this.isCreator = false;
       }
-    });
+    }).catch(e => { console.log(e) });
     wx.showShareMenu({
       withShareTicket: true
     })
@@ -141,7 +149,6 @@ export default {
   bottom:0;
   width:100%;
   display: flex;
-  background:-webkit-linear-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
   background: linear-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
 }
 .buttons>span{
@@ -149,7 +156,7 @@ export default {
   text-align: center;
 }
 .buttons img{
-  width:40px;
-  height:40px;
+  width:30px;
+  height:30px;
 }
 </style>

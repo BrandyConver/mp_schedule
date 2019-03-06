@@ -244,7 +244,7 @@ export default {
   background-color: rgb(255, 255, 255);
 }
 .ltt{
-  background-color: rgb(177, 220, 255);
+  background: linear-gradient(rgb(178, 222, 255), rgb(231, 245, 255));
 }
 .task_name{
   overflow: hidden;

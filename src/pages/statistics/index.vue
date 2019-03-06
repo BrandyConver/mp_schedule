@@ -21,7 +21,17 @@ export default {
   },
   onLoad () {
     store.commit('setHeight', wx.getSystemInfoSync().windowHeight);
-    this.windowHeight = store.state.minHeight;    
+    this.windowHeight = store.state.minHeight;
+    wx.cloud.database().collection('tasks').where({
+      _openid: this.openid,
+      finished: false
+    }).count()
+    wx.cloud.database().collection('tasks').where({
+      _openid: this.openid,
+      finished: false
+    }).count().then(res => {
+      this.total = res.total;
+    });
   },
   onShow () {
   }
