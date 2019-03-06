@@ -1,8 +1,11 @@
 <template>
   <div id="index" :style="{minHeight:minHeight + 'px'}" @click="hideMenu">
     <div v-show="!multi">
+      <div class='space'></div>
+      <div class='searchbox'>
+        <input type="text" comfirm-type='search' placeholder="搜索" @confirm='search' class='search' @input="clear">
+      </div>
       <div v-if="tasks.length>0" class="task_list" >
-        <div class='space'></div>
         <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
           <div class="task_name">{{task.task_name}}</div>
           <div class="task_time">
@@ -39,8 +42,7 @@
       <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
       <div v-if="showMenu" class='menu'>
         <div class="menuli" @click="toFinished">查看完成</div>
-        <div class="menuli"><a href='../statistics/main'>任务总览</a></div>
-        <div class="menuli">更多设置</div>
+        <div class="menuli"><a href='../localSetting/main'>更多设置</a></div>
       </div>
       <div class="multi_btn" v-if="multi">
         <div @click="remove">删除</div>
@@ -83,6 +85,22 @@ export default {
     },
     select (e) {
       this.selected = e.mp.detail.value;
+    },
+    search (e) { // 全局搜索
+      let word = new RegExp(e.mp.detail.value.trim(), 'ig');
+      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
+      this.tasks = result;
+    },
+    clear (e) {
+      let _this = this;
+      if (e.mp.detail.value === '') {
+        wx.getStorage({
+          key: 'hometasks',
+          success (res) {
+            _this.tasks = res.data;
+          }
+        })
+      }
     },
     remove () {
       let _this = this;
@@ -142,6 +160,10 @@ export default {
         } else {
           this.tasks = res.data;
         }
+        wx.setStorage({
+          key: 'hometasks',
+          data: this.tasks
+        });
       }).catch(res => {
         console.log(res.errMsg);
       });
@@ -230,6 +252,17 @@ export default {
 <style scoped>
 #index{
   background-color:rgb(240,240,240);
+}
+.searchbox{
+  height:35px;
+  border-radius:20px;
+  background-color: #fff;
+  margin: 10px;
+  padding-left: 10px;
+}
+.searchbox input{
+  height: 100%;
+  line-height: 100%;
 }
 .space{
   height:1px;

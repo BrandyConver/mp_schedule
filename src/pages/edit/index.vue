@@ -21,7 +21,6 @@
 				    {{end_time}}
 				</picker>
 			</div>
-
 		</form>
 		<div class="save"><button @click="save">保存</button></div>
 	</div>

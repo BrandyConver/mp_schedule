@@ -11,6 +11,7 @@
           <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
         </div>
       </div>
+      <div class="total">共{{total}}条数据</div>
     </div>        
     <div v-else class='no_task' :style="{minHeight:windowHeight + 'px'}">当前列表为空</div>
     <div class="float_tip"  :style="{visibility: floatTip.isShow?'visible':'hidden',left:position.x, top:position.y }" >
@@ -32,6 +33,7 @@ export default {
       time: getTime(),
       windowHeight: '',
       windowWidth: '',
+      total: '0',
       floatTip: {
         x: 0,
         y: 0,
@@ -173,12 +175,15 @@ export default {
   border: 1px solid rgb(240,240,240);
 }
 .searchbox{
-  height:30px;
-  line-height:30px;
+  height:35px;
   border-radius:20px;
   background-color: #fff;
   margin: 10px;
   padding-left: 10px;
+}
+.searchbox input{
+  height: 100%;
+  line-height: 100%;
 }
 .task{
   margin: 10px;
@@ -196,6 +201,10 @@ export default {
 }
 .task_time{
   font-size:15px;
+}
+.total{
+  text-align: center;
+  color: #555;
 }
 .no_task{
   text-align: center;

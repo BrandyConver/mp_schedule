@@ -6,6 +6,7 @@
         <span>任务详情：</span>
         <div >{{task.detail}}</div>
       </div>
+      <div class="sp_ard"><span>任务状态:</span><span>{{task.finished?'已完成':'未完成'}}</span></div>
       <div v-if="task.long_term">
         <div class="sp_ard"><span>任务时间：</span><span>长期任务</span></div>
       </div>
@@ -13,7 +14,7 @@
         <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
         <div class="sp_ard"><span>结束时间:</span><span>{{task.end_time}}</span></div>
       </div>
-      <div class="sp_ard"><span>修改时间:</span><span>{{task.create_time}}</span>  </div>
+      <div class="sp_ard"><span>修改时间:</span><span>{{task.create_time}}</span></div>
     </div>
 
     <div class="buttons" v-show="isCreator">
@@ -121,10 +122,16 @@ export default {
 }
 .sp_ard{
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   background-color: #fff;
   margin:10px 0;
-  padding:8px 0;
+  padding:8px 10%;
+  text-align:center;
+}
+.sp_ard span:first-of-type{
+  align-self: flex-start;
+  width: 30%;
+  flex: none
 }
 .task_name{
   text-align: center;
