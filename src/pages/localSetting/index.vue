@@ -3,14 +3,17 @@
     #开发中#
     <div>
       <div class="space"></div>
-      <div class="control"> <span> 普通任务背景颜色</span><div class="colorpicker"></div></div>
-      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker"></div></div>
+      <div class="control"> <span> 普通任务背景颜色</span><div class="colorpicker" id="cnor" @tap="pickcolor($event)"></div></div>
+      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" id="cltm" @tap="pickcolor($event)"></div></div>
       <div class='switch control'>到期任务自动置为完成<switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
+      <div>111</div>
+      <div>333</div>
+      <div>555</div>
     </div>
 
-    <div>
-      <div class="colorpickerconp" v-if="true">
-        <canvas canvas-id="canvas1" id="canvas1"></canvas>
+    <div class="bgmask" :style="{top:positionY}" v-if="isPick">
+      <div class="colorpickerconp" >
+        <canvas canvas-id="canvas1" id="canvas1" @tap="pickLightness($event)"></canvas>
         <canvas canvas-id="canvas2" id="canvas2" @tap="setLightness($event)"></canvas>
       </div>
     </div>
@@ -26,17 +29,66 @@ export default {
   data () {
     return {
       windowHeight: '',
-      colornor: ''
+      colornor: '',
+      colorltm: '',
+      isPick: true,
+      positionY: 0
     }
   },
   methods: {
     save () { // aoto save
       console.log('save')
     },
+    // target and position
+    pickcolor (event) {
+      // let x = event.x;
+      // let y = event.y;
+      this.positionY = event.y;
+      console.log(event.target.id);
+      console.log(this.positionY);
+    },
     setLightness (event) {
       let x = event.x - event.mp.target.offsetLeft;
       let y = event.y - event.mp.target.offsetTop;
-      console.log(x, y);
+      const ctxln = wx.createCanvasContext('canvas1');
+      const lightness = ctxln.createLinearGradient(0, 0, 200, 0);
+      lightness.addColorStop(0, '#fff');
+      let imgdata;
+      wx.canvasGetImageData({
+        canvasId: 'canvas2',
+        x,
+        y,
+        width: 1,
+        height: 1,
+        success (res) {
+          imgdata = res.data.join(',');
+          lightness.addColorStop(1, `rgba(${imgdata})`);
+          ctxln.setFillStyle(lightness);
+          ctxln.fillRect(0, 0, 200, 200);
+          let mask = ctxln.createLinearGradient(0, 200, 0, 0); // 垂直渐变
+          mask.addColorStop(0, 'rgba(0,0,0,1)');
+          mask.addColorStop(1, 'rgba(0,0,0,0)');
+          ctxln.setFillStyle(mask);
+          ctxln.fillRect(0, 0, 200, 200);
+          ctxln.draw();
+        }
+      })
+    },
+    pickLightness (event) {
+      let x = event.x - event.mp.target.offsetLeft;
+      let y = event.y - event.mp.target.offsetTop;
+      let imgdata;
+      wx.canvasGetImageData({
+        canvasId: 'canvas1',
+        x,
+        y,
+        width: 1,
+        height: 1,
+        success (res) {
+          imgdata = res.data.join(',');
+          console.log(`rgba(${imgdata})`);
+        }
+      })
     }
   },
   computed: {
@@ -88,9 +140,19 @@ switch{
 }
 .colorpicker{
   display: inline-block;
-  width: 50px;
-  height: 20px;
+  width: 80px;
+  height: 24px;
   border: 1px solid #000;
+}
+.bgmask{
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 9;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  border:4px solid red
+
 }
 .colorpickerconp{
   border: 1px solid #000;
