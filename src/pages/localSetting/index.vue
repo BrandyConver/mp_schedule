@@ -1,10 +1,10 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}" >
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false">
     #开发中#
     <div>
       <div class="space"></div>
-      <div class="control"> <span> 普通任务背景颜色</span><div class="colorpicker" id="cnor" @tap="pickcolor($event)"></div></div>
-      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" id="cltm" @tap="pickcolor($event)"></div></div>
+      <div class="control"> <span> 普通任务背景颜色</span><div class="colorpicker" id="cnor" @tap.stop="pickcolor($event)"></div></div>
+      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" id="cltm" @tap.stop="pickcolor($event)"></div></div>
       <div class='switch control'>到期任务自动置为完成<switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
       <div>111</div>
       <div>333</div>
@@ -31,7 +31,7 @@ export default {
       windowHeight: '',
       colornor: '',
       colorltm: '',
-      isPick: true,
+      isPick: false,
       positionY: 0
     }
   },
@@ -43,8 +43,9 @@ export default {
     pickcolor (event) {
       // let x = event.x;
       // let y = event.y;
-      this.positionY = event.y;
-      console.log(event.target.id);
+      this.isPick = true;
+      this.positionY = event.target.offsetTop + 40;
+      console.log(event);
       console.log(this.positionY);
     },
     setLightness (event) {
@@ -145,18 +146,18 @@ switch{
   border: 1px solid #000;
 }
 .bgmask{
-  background: rgba(255, 255, 255, 0.7);
+  background: rgb(255, 255, 255);
   z-index: 9;
   position: absolute;
-  top: 60px;
+  top: 80px;
   left: 0;
-  width: 100%;
+  width: 259px;
   border:4px solid red
 
 }
 .colorpickerconp{
   border: 1px solid #000;
-
+  margin: 0 auto
 }
 canvas{
   border:1px solid #000;

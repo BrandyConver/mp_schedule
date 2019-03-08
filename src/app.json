@@ -1,10 +1,10 @@
 {
   "pages": [
+    "pages/localSetting/main",
     "pages/index/main",
     "pages/edit/main",
     "pages/detail/main",
-    "pages/finished/main",
-    "pages/localSetting/main"
+    "pages/finished/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
