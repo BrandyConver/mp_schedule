@@ -3,11 +3,10 @@
     #开发中#
     <div>
       <div class="space"></div>
-      <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor}" id="cnor" @tap.stop="pickcolor($event)"></div></div>
+      <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm}" id="cltm" @tap.stop="pickcolor($event)"></div></div>
       <div class='switch control'><span>到期任务自动置为完成<span></span>&nbsp;&nbsp;?</span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
       <div>&nbsp;</div>
-      <div>111</div>
       <div><button @click="save" >save</button></div>
     </div>
 
@@ -31,37 +30,44 @@ export default {
       windowHeight: '',
       // color format rgba(x,x,x,x) or #xxx
       colornow: '', // 当前色调
-      colornor: '#fff', 
-      colorltm: '#0f0',
+      colornor: '#fff',  
+      colorltm: '#fff',
       lightnessnor: '',
       lightnessltm: '',
       isPick: false,
       positionY: 0,
       targetId: '',
       isAutoFin: false,
+      fontColornor: '#000'
     }
   },
   methods: {
     save () {
-      let color1 = this.colornor.match(/d+/g);
-      console.log('save');
-      console.log(color1);
-      // wx.setStorage({
-      //   key: 'localSetting',
-      //   data: {
-      //     colornor: this.colornow,
-      //     lightnessnor: this.lightnessnor,
-      //     fontColornor: true ? '#000' : '#fff', // use regExp
-      //     colorltm: this.colorltm,
-      //     lightnessltm: this.lightnessltm,
-      //     fontColorltm: true ? '#000' : '#fff', // use regExp
-      //   }
-      // })
+      let color1 = this.lightnessnor.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+        return parseInt(total) + parseInt(cur)
+      });
+      let color2 = this.lightnessltm.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+        return parseInt(total) + parseInt(cur)
+      });
+      let fontColornor = color1 > 270 ? '#000' : '#fff';
+      let fontColorltm = color2 > 270 ? '#000' : '#fff';
+      this.fontColornor = fontColornor; // del
+      wx.setStorage({
+        key: 'localSetting',
+        data: {
+          colornor: this.colornor,
+          lightnessnor: this.lightnessnor,
+          fontColornor: fontColornor,
+          colorltm: this.colorltm,
+          lightnessltm: this.lightnessltm,
+          fontColorltm: fontColorltm,
+          isAutoFin: this.isAutoFin
+        }
+      })
     },
-    autoFinish () {
-
+    autoFinish (e) {
+      this.isAutoFin = e.mp.detail.value;
     },
-    // target and position
     pickcolor (event) {
       // 确定当前操作元素 设置nowcolor(hex)=color(nor/ltm)
       this.targetId = event.target.id;
@@ -164,15 +170,32 @@ export default {
     }
   },
   computed: {
+    col_hex_nor () {
+      let colArr = this.lightnessnor.match(/\d+/g).slice(0, 3).map((item) => { // Cannot read property 'slice' of null
+        return parseInt(item).toString(16)
+      });
+      return '#' + colArr.join('')
+    }
   },
   watch: {
-    // colornow: function (oval, nval) {
-    //   console.log(nval + 'watch');
-    // }
   },
   onLoad () {
+    let _this = this;
     store.commit('setHeight', wx.getSystemInfoSync().windowHeight);
     this.windowHeight = store.state.deviceHeight;
+    wx.getStorage({
+      key: 'localSetting',
+      success (res) {
+        console.log(res.data);
+        _this.lightnessnor = res.data.lightnessnor;
+        _this.lightnessltm = res.data.lightnessltm;
+        _this.colornor = res.data.colornor; 
+        _this.colorltm = res.data.colorltm;
+        _this.isAutoFin = res.data.isAutoFin;
+      }
+    })
+
+    // end
   },
   onShow () {
   },
@@ -208,7 +231,7 @@ switch{
   display: inline-block;
   width: 80px;
   height: 24px;
-  border: 1px solid #000;
+  border: 1px solid #666;
 }
 .bgmask{
   background: rgb(255, 255, 255);
