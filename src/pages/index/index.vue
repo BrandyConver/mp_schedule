@@ -3,7 +3,7 @@
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
-        <input type="text" comfirm-type='search' placeholder="搜索" @confirm='search' class='search' @input="clear">
+        <input type="text" comfirm-type='search' placeholder="搜索全部" @confirm='search' class='search' @input="clear">
       </div>
       <div v-if="tasks.length>0" class="task_list" >
         <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
@@ -184,8 +184,8 @@ export default {
               detail: `1.新建任务：点击主页右下角"+"键可创建新任务。
 2.多选操作：在主页屏幕长按进入多选，可批量标记完成或删除任务。
 3.主页左下角 菜单键->查看完成 可查看历史任务，长按任务可操作单个任务。
-4.长期任务有背景颜色，任务已过结束时间，其时间显示颜色会改变`,
-              // 5.更多设置中可进行个人样式设置
+4.长期任务有背景颜色，任务已过结束时间，其时间显示颜色会改变。,
+5.更多设置中可进行个人样式设置。`,
               long_term: false,
               start_time: getTime(),
               end_time: getTime(Date.now() + 3600000),
@@ -195,6 +195,14 @@ export default {
           }).then(res => {
             console.log('生成首个任务')
           }).catch(res => console.log(res));
+        }
+      });
+      let _this = this;
+      wx.getStorage({
+        key: '',
+        success (res) {
+          console.log(res.data);
+          _this.localSetting = res.data;
         }
       });
     }

@@ -5,7 +5,7 @@
       <div class="space"></div>
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
-      <div class='switch control'><span>到期任务自动置为完成<span></span>&nbsp;&nbsp;?</span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
+      <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="tipAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
       <div>&nbsp;</div>
       <div><button @click="save" >save</button></div>
     </div>
@@ -155,6 +155,9 @@ export default {
           }
         });
       }).exec();
+    },
+    tipAutoFin () {
+      //
     }
   },
   computed: {
@@ -249,6 +252,16 @@ switch{
   top: 80px;
   left: 70px;
   box-shadow: #666 0 0 20px 5px;
+}
+.tipSpan{
+  display: inline-block;
+  border:1px solid #666;
+  border-radius:99px;
+  font-size: 16px;
+  width:18px;
+  height:18px;
+  line-height: 18px;
+  text-align: center;
 }
 .pickcolorconp{
   display: flex;
