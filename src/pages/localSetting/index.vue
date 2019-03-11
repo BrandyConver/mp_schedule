@@ -1,13 +1,14 @@
 <template>
   <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false">
-    #开发中#
     <div>
       <div class="space"></div>
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
-      <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="tipAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
-      <div>&nbsp;</div>
-      <div><button @click="save" >save</button></div>
+      <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="aboutAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
+      <div class="btns">
+        <button @click="save" >save</button>
+        <button @click="reset">reset</button>
+      </div>
     </div>
 
     <div class="bgmask" :style="{top:positionY+'px'}" v-show="isPick">
@@ -16,6 +17,8 @@
         <canvas canvas-id="canvas2" id="canvas2" @tap.stop="setLightness($event)"></canvas>
       </div>  
     </div>
+
+    <div v-if="tipMsg!==''" class="tipDiv"><div>{{tipMsg}}</div></div>
   </div>
 </template>
 
@@ -35,7 +38,8 @@ export default {
       isPick: false,
       positionY: 0,
       targetId: '',
-      isAutoFin: false
+      isAutoFin: false,
+      tipMsg: ''
     }
   },
   methods: {
@@ -53,6 +57,22 @@ export default {
         }
       })
     },
+    reset () {
+      wx.removeStorage({
+        key: 'localSetting',
+        success (res) {
+          // 返回主页后不生效，重启后生效
+          console.log(res.errMsg)
+        }
+      })
+    },
+    aboutAutoFin () {
+      let _this = this;
+      this.tipMsg = '若任务的截止时间超过当前时间，该任务的状态会被自动置为已完成';
+      setTimeout(function () {
+        _this.tipMsg = '';
+      }, 2000);
+    },
     autoFinish (e) {
       this.isAutoFin = e.mp.detail.value;
     },
@@ -67,7 +87,7 @@ export default {
       this.isPick = true;
       this.positionY = event.target.offsetTop + 40;
       const ctxcl = wx.createCanvasContext('canvas2');
-      const colors = ctxcl.createLinearGradient(0, 0, 0, 200); // 色度条
+      const colors = ctxcl.createLinearGradient(0, 5, 0, 195); // 垂直色度条↓ 上下预留5px
       colors.addColorStop(0.0000, '#f00');
       colors.addColorStop(0.1667, '#ff0');
       colors.addColorStop(0.3333, '#0f0');
@@ -79,12 +99,12 @@ export default {
       ctxcl.fillRect(0, 0, 30, 200);
       ctxcl.draw();
       const ctxln = wx.createCanvasContext('canvas1');
-      let nowcolor = ctxln.createLinearGradient(0, 0, 200, 0);
+      let nowcolor = ctxln.createLinearGradient(10, 10, 190, 10); // 水平亮度条→ 上下左右预留10px 下同
       nowcolor.addColorStop(0, '#fff');
       nowcolor.addColorStop(1, this.colornow);
       ctxln.setFillStyle(nowcolor);
       ctxln.fillRect(0, 0, 200, 200);
-      let mask = ctxln.createLinearGradient(0, 200, 0, 0); // 垂直渐变 半透明黑
+      let mask = ctxln.createLinearGradient(10, 190, 10, 10); // 垂直渐变↑ 半透明黑
       mask.addColorStop(0, 'rgba(0,0,0,1)');
       mask.addColorStop(1, 'rgba(0,0,0,0)');
       ctxln.setFillStyle(mask);
@@ -97,7 +117,7 @@ export default {
       let y = event.y;
       let imgdata;
       const ctxln = wx.createCanvasContext('canvas1');
-      const lightness = ctxln.createLinearGradient(0, 0, 200, 0);
+      const lightness = ctxln.createLinearGradient(10, 10, 190, 10);
       lightness.addColorStop(0, '#fff');
       wx.createSelectorQuery().select('#canvas2').boundingClientRect(function (rect) { // async
         y = y - rect.top;
@@ -110,10 +130,10 @@ export default {
           height: 1,
           success (res) {
             imgdata = res.data.join(',');
-            lightness.addColorStop(1, `rgba(${imgdata})`); // 亮度条
+            lightness.addColorStop(1, `rgba(${imgdata})`);
             ctxln.setFillStyle(lightness);
             ctxln.fillRect(0, 0, 200, 200);
-            let mask = ctxln.createLinearGradient(0, 200, 0, 0); // 垂直渐变
+            let mask = ctxln.createLinearGradient(10, 190, 10, 10);
             mask.addColorStop(0, 'rgba(0,0,0,1)');
             mask.addColorStop(1, 'rgba(0,0,0,0)');
             ctxln.setFillStyle(mask);
@@ -162,31 +182,43 @@ export default {
   },
   computed: {
     col_hex_nor () {
-      let colArr = this.lightnessnor.match(/\d+/g).slice(0, 3).map((item) => { // Cannot read property 'slice' of null
-        let hexnum = parseInt(item).toString(16).toUpperCase();
-        return hexnum.length >= 2 ? hexnum : '0' + hexnum;
-      });
-      return colArr.join('');
+      if (this.lightnessnor) {
+        let colArr = this.lightnessnor.match(/\d+/g).slice(0, 3).map((item) => {
+          let hexnum = parseInt(item).toString(16).toUpperCase();
+          return hexnum.length >= 2 ? hexnum : '0' + hexnum;
+        });
+        return colArr.join('');
+      } else {
+        return 'FFF'
+      }
     },
     col_hex_ltm () {
-      let colArr = this.lightnessltm.match(/\d+/g).slice(0, 3).map((item) => { // Cannot read property 'slice' of null
-        let hexnum = parseInt(item).toString(16).toUpperCase();
-        return hexnum.length >= 2 ? hexnum : '0' + hexnum;
-      });
-      return colArr.join('');
+      if (this.lightnessltm) {
+        let colArr = this.lightnessltm.match(/\d+/g).slice(0, 3).map((item) => {
+          let hexnum = parseInt(item).toString(16).toUpperCase();
+          return hexnum.length >= 2 ? hexnum : '0' + hexnum;
+        });
+        return colArr.join('');
+      } else {
+        return 'FFF'
+      }
     },
     // 文本颜色
     fontColornor () {
-      let color1 = this.lightnessnor.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
-        return parseInt(total) + parseInt(cur)
-      });
-      return color1 > 270 ? '#000' : '#fff';
+      if (this.lightnessnor) {
+        let color1 = this.lightnessnor.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+          return parseInt(total) + parseInt(cur)
+        });
+        return color1 > 270 ? '#000' : '#fff';
+      }
     },
     fontColorltm () {
-      let color2 = this.lightnessltm.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
-        return parseInt(total) + parseInt(cur)
-      });
-      return color2 > 270 ? '#000' : '#fff';
+      if (this.lightnessltm) {
+        let color2 = this.lightnessltm.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+          return parseInt(total) + parseInt(cur)
+        });
+        return color2 > 270 ? '#000' : '#fff';
+      }
     }
   },
   watch: {
@@ -198,7 +230,6 @@ export default {
     wx.getStorage({
       key: 'localSetting',
       success (res) {
-        console.log(res.data);
         _this.lightnessnor = res.data.lightnessnor;
         _this.lightnessltm = res.data.lightnessltm;
         _this.colornor = res.data.colornor; 
@@ -250,7 +281,8 @@ switch{
   z-index: 9;
   position: absolute;
   top: 80px;
-  left: 70px;
+  margin-left:50%;
+  transform: translateX(-50%);
   box-shadow: #666 0 0 20px 5px;
 }
 .tipSpan{
@@ -278,5 +310,45 @@ canvas{
   margin-left: 10px;
   width: 30px;
   height: 200px;
+}
+.btns{
+  font-weight:bold;
+  position:fixed;
+  bottom: 0;
+  width: 100%;
+}
+.btns button{
+  height: 40px;
+  line-height: 40px;
+  font-size:20px;
+  color:#fff;
+}
+.btns button:first-of-type{
+  background:rgb(3, 194, 28);
+  margin: 0 10px;
+}
+.btns button:nth-of-type(2){
+  margin: 10px;
+  background:crimson
+}
+.tipDiv{
+  position:absolute;
+  top:150px;
+  padding: 30px;
+  margin:0 50%;
+  transform: translateX(-50%);
+  width:120px;
+  height:120px;
+  display: table;
+  background: rgba(200,200,200,0.6);
+  text-align: center;
+  border-radius: 10px;
+}
+.tipDiv>div{
+  display: table-cell;
+  vertical-align: middle
+}
+.space{
+  height:1px;
 }
 </style>

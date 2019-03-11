@@ -5,11 +5,11 @@ const db = cloud.database()
 exports.main = async (event, context) => {
   let ids = event.ids;
   let operation = event.operation;
-  // 使用db.command查询指令查询ids
+  // 使用db.command指令查询ids
   const dbcmd = db.command;
 
   // 批量删除
-  if (operation=='remove'){
+  if (operation === 'remove') {
     try {
       return await db.collection('tasks').where({
         _id: dbcmd.in(ids)
@@ -19,7 +19,7 @@ exports.main = async (event, context) => {
     }
 
     // 批量完成
-  } else if (operation=="finish") {
+  } else if (operation === 'finish') {
     try {
       return await db.collection('tasks').where({
         _id: dbcmd.in(ids)
@@ -33,6 +33,6 @@ exports.main = async (event, context) => {
       console.error(e)
     }
   } else {
-    console.error("incorrect operation");
+    console.error('incorrect operation');
   }
 };

@@ -79,10 +79,8 @@ export default {
     }
   },
   onShow (shrtic) {
-    // console.log(shrtic);
   },
   onLoad (options) {
-    console.log(options)
     wx.cloud.init();
     // 获取访问者openid
     const getopenid = wx.cloud.callFunction({

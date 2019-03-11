@@ -6,10 +6,11 @@
         <input type="text" comfirm-type='search' placeholder="搜索全部" @confirm='search' class='search' @input="clear">
       </div>
       <div v-if="tasks.length>0" class="task_list" >
-        <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
-          <div class="task_name">{{task.task_name}}</div>
+        <div class="task" :class="{ltt:task.long_term}" :style="{background:task.long_term?localSetting.lightnessltm:localSetting.lightnessnor}"
+          v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
+          <div class="task_name" :style="{color:task.long_term?localSetting.fontColorltm:localSetting.fontColornor}">{{task.task_name}}</div>
           <div class="task_time">
-            <span v-if="task.long_term" class="long_term">长期任务</span>
+            <span v-if="task.long_term" class="long_term" :style="{color:localSetting.fontColorltm=='#fff'?'#ddd':'#222'}">长期任务</span>
             <span v-else :style="{ color: task.end_time>time?timecolor[0]:timecolor[1]}" >{{task.start_time}}~{{task.end_time}}</span>
           </div>
         </div>
@@ -68,7 +69,8 @@ export default {
       minHeight: '',
       showMenu: false,
       multi: false,
-      selected: []
+      selected: [],
+      localSetting: {}
     }
   },
   methods: {
@@ -87,9 +89,20 @@ export default {
       this.selected = e.mp.detail.value;
     },
     search (e) { // 全局搜索
-      let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
-      this.tasks = result;
+      // let word = new RegExp(e.mp.detail.value.trim(), 'ig');
+      // let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
+      // this.tasks = result;
+      console.log(e.mp.detail.value);
+      wx.cloud.callFunction({
+        name: 'search',
+        data: {
+          world: e.mp.detail.value.trim()
+        }
+      }).then(res => {
+        console.log(res.data)
+      }).catch(res => {
+        console.log(res.errMsg);
+      });
     },
     clear (e) {
       let _this = this;
@@ -173,7 +186,6 @@ export default {
       wx.getStorage({
         key: 'hasUsed',
         fail (res) {
-          console.log('首次使用');
           wx.setStorage({
             key: 'hasUsed',
             data: 'hasUsed'
@@ -192,17 +204,8 @@ export default {
               finished: false,
               create_time: getTime()
             }
-          }).then(res => {
-            console.log('生成首个任务')
-          }).catch(res => console.log(res));
-        }
-      });
-      let _this = this;
-      wx.getStorage({
-        key: '',
-        success (res) {
-          console.log(res.data);
-          _this.localSetting = res.data;
+          }).then(res => {})
+          .catch(res => console.log(res.errMsg));
         }
       });
     }
@@ -252,7 +255,14 @@ export default {
       this.getData();
     }).catch(err => {
       console.error('err' + err);
-    }); 
+    });
+    let _this = this;
+    wx.getStorage({
+      key: 'localSetting',
+      success (res) {
+        _this.localSetting = res.data;
+      }
+    });
   }
 }
 </script>
@@ -288,12 +298,15 @@ export default {
   background: linear-gradient(rgb(178, 222, 255), rgb(231, 245, 255));
 }
 .task_name{
+  padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .task_time{
-  font-size:15px;
+  border-top:1px solid #666;
+  font-size:14px;
+  padding-left:5px;
 }
 .no_task{
   text-align: center;

@@ -5,7 +5,7 @@ export default {
     // const logs = wx.getStorageSync('logs') || []
     // logs.unshift(Date.now())
     // wx.setStorageSync('logs', logs)
-    // 写入默认 localSetting
+    // 调用 autofin
   }
 }
 </script>
