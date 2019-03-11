@@ -97,6 +97,7 @@ export default {
       _this.task = res.data;
       return res.data._openid;
     }).catch(res => res.errMsg);
+    // promise.all 处理两个异步
     Promise.all([getopenid, gettask]).then(([idresult, taskresult]) => {
       if (idresult !== taskresult) {
         this.isCreator = false;

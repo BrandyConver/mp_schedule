@@ -69,8 +69,8 @@ export default {
       });
     },
     search (e) {
-      let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
+      let world = new RegExp(e.mp.detail.value.trim(), 'ig');
+      let result = this.tasks.filter(task => task.task_name.search(world) >= 0);
       this.tasks = result;
     },
     clear (e) {

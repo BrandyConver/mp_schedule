@@ -89,20 +89,30 @@ export default {
       this.selected = e.mp.detail.value;
     },
     search (e) { // 全局搜索
-      // let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      // let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
-      // this.tasks = result;
-      console.log(e.mp.detail.value);
-      wx.cloud.callFunction({
-        name: 'search',
-        data: {
-          world: e.mp.detail.value.trim()
-        }
-      }).then(res => {
-        console.log(res.data)
+      let world = new RegExp(e.mp.detail.value.trim(), 'ig');
+      const dbtask = wx.cloud.database().collection('tasks');
+      // let schname = 
+      dbtask.where({
+        _openid: this.openid,
+        task_name: world
+      }).get().then(res => {
+        return res.data;
+        this.tasks = res.data;
       }).catch(res => {
         console.log(res.errMsg);
       });
+      // let schdtl = dbtask.where({
+      //   _openid: this.opneid,
+      //   detail: world
+      // }).get().then(res => {
+      //   return res.data;
+      // }).catch(res => {
+      //   console.log(res.errMsg);
+      // });
+      // Promise.all([schname, schdtl]).then((result1, result2) => {
+      //   this.tasks = [...new Set(result1, result2)];
+      //   console.log(this.tasks);
+      // })
     },
     clear (e) {
       let _this = this;
