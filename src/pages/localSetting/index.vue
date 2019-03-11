@@ -3,8 +3,8 @@
     #开发中#
     <div>
       <div class="space"></div>
-      <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">{{col_hex_nor}}</div></div>
-      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm}" id="cltm" @tap.stop="pickcolor($event)"></div></div>
+      <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
+      <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
       <div class='switch control'><span>到期任务自动置为完成<span></span>&nbsp;&nbsp;?</span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
       <div>&nbsp;</div>
       <div><button @click="save" >save</button></div>
@@ -16,7 +16,6 @@
         <canvas canvas-id="canvas2" id="canvas2" @tap.stop="setLightness($event)"></canvas>
       </div>  
     </div>
-
   </div>
 </template>
 
@@ -28,7 +27,6 @@ export default {
   data () {
     return {
       windowHeight: '',
-      // color format rgba(x,x,x,x) or #xxx
       colornow: '', // 当前色调
       colornor: '#fff',  
       colorltm: '#fff',
@@ -37,30 +35,20 @@ export default {
       isPick: false,
       positionY: 0,
       targetId: '',
-      isAutoFin: false,
-      fontColornor: '#000'
+      isAutoFin: false
     }
   },
   methods: {
     save () {
-      let color1 = this.lightnessnor.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
-        return parseInt(total) + parseInt(cur)
-      });
-      let color2 = this.lightnessltm.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
-        return parseInt(total) + parseInt(cur)
-      });
-      let fontColornor = color1 > 270 ? '#000' : '#fff';
-      let fontColorltm = color2 > 270 ? '#000' : '#fff';
-      this.fontColornor = fontColornor; // del
       wx.setStorage({
         key: 'localSetting',
         data: {
           colornor: this.colornor,
           lightnessnor: this.lightnessnor,
-          fontColornor: fontColornor,
+          fontColornor: this.fontColornor,
           colorltm: this.colorltm,
           lightnessltm: this.lightnessltm,
-          fontColorltm: fontColorltm,
+          fontColorltm: this.fontColorltm,
           isAutoFin: this.isAutoFin
         }
       })
@@ -172,9 +160,30 @@ export default {
   computed: {
     col_hex_nor () {
       let colArr = this.lightnessnor.match(/\d+/g).slice(0, 3).map((item) => { // Cannot read property 'slice' of null
-        return parseInt(item).toString(16)
+        let hexnum = parseInt(item).toString(16).toUpperCase();
+        return hexnum.length >= 2 ? hexnum : '0' + hexnum;
       });
-      return '#' + colArr.join('')
+      return colArr.join('');
+    },
+    col_hex_ltm () {
+      let colArr = this.lightnessltm.match(/\d+/g).slice(0, 3).map((item) => { // Cannot read property 'slice' of null
+        let hexnum = parseInt(item).toString(16).toUpperCase();
+        return hexnum.length >= 2 ? hexnum : '0' + hexnum;
+      });
+      return colArr.join('');
+    },
+    // 文本颜色
+    fontColornor () {
+      let color1 = this.lightnessnor.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+        return parseInt(total) + parseInt(cur)
+      });
+      return color1 > 270 ? '#000' : '#fff';
+    },
+    fontColorltm () {
+      let color2 = this.lightnessltm.match(/\d+/g).slice(0, 3).reduce((total, cur) => {
+        return parseInt(total) + parseInt(cur)
+      });
+      return color2 > 270 ? '#000' : '#fff';
     }
   },
   watch: {
@@ -194,8 +203,6 @@ export default {
         _this.isAutoFin = res.data.isAutoFin;
       }
     })
-
-    // end
   },
   onShow () {
   },
@@ -229,9 +236,11 @@ switch{
 }
 .colorpicker{
   display: inline-block;
-  width: 80px;
+  width: 90px;
   height: 24px;
   border: 1px solid #666;
+  text-align: center;
+  line-height: 24px;
 }
 .bgmask{
   background: rgb(255, 255, 255);
