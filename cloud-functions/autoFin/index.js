@@ -17,7 +17,7 @@ exports.main = async (event, context) => {
   // 使用db.command查询指令查询ids
   const dbcmd = db.command;
   let now = getTime();
-  db.collection('tasks').where({
+  let result = db.collection('tasks').where({
     end_time: dbcmd.lte(now),
     finished: false,
     long_term: false
@@ -27,4 +27,5 @@ exports.main = async (event, context) => {
     }
   }).then(res => res)
   .catch(res => console.log(res.errMsg));
+  return result;
 };

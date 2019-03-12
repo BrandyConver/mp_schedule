@@ -327,7 +327,7 @@ export default {
   white-space: nowrap;
 }
 .task_time{
-  border-top:1px solid #666;
+  border-top:1px solid #999;
   font-size:14px;
   padding-left:5px;
 }

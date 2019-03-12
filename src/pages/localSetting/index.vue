@@ -348,7 +348,7 @@ canvas{
   width:120px;
   height:120px;
   display: table;
-  background: rgba(200,200,200,0.6);
+  background: rgba(200,200,200,0.8);
   text-align: center;
   border-radius: 10px;
 }
