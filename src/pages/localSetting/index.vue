@@ -5,6 +5,7 @@
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
       <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="aboutAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
+      <div class="test"  @tap="testtap($event)">11111</div>
       <div class="btns">
         <button @click="save" >save</button>
         <button @click="reset">reset</button>
@@ -13,8 +14,8 @@
 
     <div class="bgmask" :style="{top:positionY+'px'}" v-show="isPick">
       <div class="pickcolorconp">
-        <canvas canvas-id="canvas1" id="canvas1" @tap.stop="pickLightness($event)"></canvas>
-        <canvas canvas-id="canvas2" id="canvas2" @tap.stop="setLightness($event)"></canvas>
+        <canvas canvas-id="canvas1" id="canvas1" @tap.stop="setLightness($event)"></canvas>
+        <canvas canvas-id="canvas2" id="canvas2" @tap.stop="setColor($event)"></canvas>
       </div>  
     </div>
 
@@ -43,6 +44,9 @@ export default {
     }
   },
   methods: {
+    testtap (e) {
+      console.log(e)
+    },
     save () {
       wx.setStorage({
         key: 'localSetting',
@@ -59,6 +63,9 @@ export default {
           wx.showToast({
             title: '保存成功',
             mask: true
+          });
+          wx.navigateBack({
+            delta: 1
           })
         }
       })
@@ -127,14 +134,12 @@ export default {
       ctxln.fillRect(0, 0, 200, 200);
       ctxln.draw();
     },
-    setLightness (event) {
+    setColor (event) {
       let _this = this
       let x = event.x;
       let y = event.y;
       let imgdata;
       const ctxln = wx.createCanvasContext('canvas1');
-      const lightness = ctxln.createLinearGradient(10, 10, 190, 10);
-      lightness.addColorStop(0, '#fff');
       wx.createSelectorQuery().select('#canvas2').boundingClientRect(function (rect) { // async
         y = y - rect.top;
         x = x - rect.left;
@@ -146,9 +151,12 @@ export default {
           height: 1,
           success (res) {
             imgdata = res.data.join(',');
+            let lightness = ctxln.createLinearGradient(10, 10, 190, 10);
+            lightness.addColorStop(0, '#fff');
             lightness.addColorStop(1, `rgba(${imgdata})`);
             ctxln.setFillStyle(lightness);
             ctxln.fillRect(0, 0, 200, 200);
+            // ctxln.draw();
             let mask = ctxln.createLinearGradient(10, 190, 10, 10);
             mask.addColorStop(0, 'rgba(0,0,0,1)');
             mask.addColorStop(1, 'rgba(0,0,0,0)');
@@ -166,7 +174,7 @@ export default {
         })
       }).exec();
     },
-    pickLightness (event) {
+    setLightness (event) {
       let _this = this;
       let x = event.x;
       let y = event.y;
@@ -190,9 +198,6 @@ export default {
           }
         });
       }).exec();
-    },
-    tipAutoFin () {
-      //
     }
   },
   computed: {
@@ -258,6 +263,7 @@ export default {
   },
   onHide () {
     // this.save();
+    this.isPick = false;
   }
 }
 </script>
@@ -303,7 +309,7 @@ switch{
 }
 .tipSpan{
   display: inline-block;
-  border:1px solid #666;
+  border:1px dashed #666;
   border-radius:99px;
   font-size: 16px;
   width:18px;
@@ -366,5 +372,11 @@ canvas{
 }
 .space{
   height:1px;
+}
+.test{
+  width:50px;
+  height:50px;
+  color:red;
+  background: blue;
 }
 </style>
