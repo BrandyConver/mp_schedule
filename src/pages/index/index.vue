@@ -109,8 +109,8 @@ export default {
       }).catch(res => {
         console.log(res.errMsg);
       });
-      Promise.all([schname, schdtl]).then(([result1, result2]) => { // result = [result1,result2]
-        // let result = [...new Set([...result1, ...result2])]; // 无法去重
+      Promise.all([schname, schdtl]).then(([result1, result2]) => {
+         // 合并 去重 set无法去重
         let result = result1.concat(result2).sort(function (cur, next) {
           if (cur._id > next._id) {
             return 1

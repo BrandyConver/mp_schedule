@@ -5,6 +5,7 @@
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
       <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="aboutAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
+      <div><button @tap="FINNOW">AUTOFIN</button></div>
       <div class="btns">
         <button @click="save" >save</button>
         <button @click="reset">reset</button>
@@ -43,6 +44,14 @@ export default {
     }
   },
   methods: {
+    FINNOW () {
+      wx.cloud.callFunction({
+        name: 'autoFin',
+        data: {}
+      }).then(res => {
+        console.log(res)
+      })
+    },
     save () {
       wx.setStorage({
         key: 'localSetting',
@@ -61,7 +70,6 @@ export default {
       wx.removeStorage({
         key: 'localSetting',
         success (res) {
-          // 返回主页后不生效，重启后生效
           console.log(res.errMsg)
         }
       })
@@ -77,7 +85,7 @@ export default {
       this.isAutoFin = e.mp.detail.value;
     },
     pickcolor (event) {
-      // 确定当前操作元素 设置nowcolor(hex)=color(nor/ltm)
+      // 确定当前操作元素 设置nowcolor=color(nor/ltm)
       this.targetId = event.target.id;
       if (this.targetId === 'cnor') {
         this.colornow = this.colornor;
@@ -146,7 +154,6 @@ export default {
               _this.colorltm = `rgba(${imgdata})`;
               _this.lightnessltm = `rgba(${imgdata})`;
             }
-            //
           }
         })
       }).exec();
@@ -181,6 +188,7 @@ export default {
     }
   },
   computed: {
+    // 十六进制表示颜色
     col_hex_nor () {
       if (this.lightnessnor) {
         let colArr = this.lightnessnor.match(/\d+/g).slice(0, 3).map((item) => {
