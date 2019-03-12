@@ -3,7 +3,7 @@
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
-        <input type="text" comfirm-type='search' placeholder="搜索全部" @confirm='search' class='search' @input="clear">
+        <input type="text" comfirm-type='search' placeholder="搜索标题或内容" @confirm='search' class='search' @input="clear">
       </div>
       <div v-if="tasks.length>0" class="task_list" >
         <div class="task" :class="{ltt:task.long_term}" :style="{background:task.long_term?localSetting.lightnessltm:localSetting.lightnessnor}"
@@ -91,28 +91,41 @@ export default {
     search (e) { // 全局搜索
       let world = new RegExp(e.mp.detail.value.trim(), 'ig');
       const dbtask = wx.cloud.database().collection('tasks');
-      // let schname = 
+      let schname = 
       dbtask.where({
         _openid: this.openid,
         task_name: world
       }).get().then(res => {
         return res.data;
-        this.tasks = res.data;
       }).catch(res => {
         console.log(res.errMsg);
       });
-      // let schdtl = dbtask.where({
-      //   _openid: this.opneid,
-      //   detail: world
-      // }).get().then(res => {
-      //   return res.data;
-      // }).catch(res => {
-      //   console.log(res.errMsg);
-      // });
-      // Promise.all([schname, schdtl]).then((result1, result2) => {
-      //   this.tasks = [...new Set(result1, result2)];
-      //   console.log(this.tasks);
-      // })
+      let schdtl = 
+      dbtask.where({
+        _openid: this.opneid,
+        detail: world
+      }).get().then(res => {
+        return res.data;
+      }).catch(res => {
+        console.log(res.errMsg);
+      });
+      Promise.all([schname, schdtl]).then(([result1, result2]) => { // result = [result1,result2]
+        // let result = [...new Set([...result1, ...result2])]; // 无法去重
+        let result = result1.concat(result2).sort(function (cur, next) {
+          if (cur._id > next._id) {
+            return 1
+          } else if (cur._id < next._id) {
+            return -1
+          } else { return 0 }
+        });
+        let tasks = [result[0]];
+        for (let item of result) {
+          if (item._id !== tasks[tasks.length - 1]._id) {
+            tasks.push(item)
+          }
+        }
+        this.tasks = tasks;
+      })
     },
     clear (e) {
       let _this = this;
