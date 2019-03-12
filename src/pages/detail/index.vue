@@ -111,8 +111,8 @@ export default {
 
 <style>
 #detail{
-  background-color: rgb(240,240,240);
-  border: 1px solid rgb(240,240,240);
+  background-color: rgb(230,230,230);
+  border: 1px solid rgb(230,230,230);
   font-size: 20px;
 }
 .task_content>div{
@@ -154,7 +154,7 @@ export default {
   bottom:0;
   width:100%;
   display: flex;
-  background: linear-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
+  background: linear-gradient(rgb(230, 230, 230), rgb(255, 255, 255));
 }
 .buttons>span{
   flex:1;

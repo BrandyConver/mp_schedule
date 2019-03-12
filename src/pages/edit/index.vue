@@ -174,7 +174,7 @@ export default{
 </script>
 <style scoped>
 #edit{
-  background-color: rgb(240,240,240);
+  background-color: rgb(230,230,230);
 }
 .control{
   background-color: rgb(255,255,255);
@@ -184,21 +184,21 @@ export default{
   line-height: 35px;
 }
 .task_name{
-  border-top:1px solid rgb(240,240,240);
-  border-bottom: 1px solid rgb(240,240,240);
+  border-top:1px solid rgb(230,230,230);
+  border-bottom: 1px solid rgb(230,230,230);
   background-color: rgb(255,255,255)
 }
 .switch{
   align-items: center;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid rgb(240,240,240);
+  border-bottom: 1px solid rgb(230,230,230);
 }
 switch{
   margin-bottom:4px;
 }
 .pick{
-  border-bottom: 1px solid rgb(240,240,240);
+  border-bottom: 1px solid rgb(230,230,230);
 }
 .dispick{
   color:rgb(90,90,90);

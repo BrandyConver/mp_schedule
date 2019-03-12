@@ -171,8 +171,8 @@ export default {
 
 <style scoped>
 #index{
-  background-color:rgb(240,240,240);
-  border: 1px solid rgb(240,240,240);
+  background-color:rgb(230,230,230);
+  border: 1px solid rgb(230,230,230);
 }
 .searchbox{
   height:35px;
@@ -188,19 +188,22 @@ export default {
 .task{
   margin: 10px;
   padding: 5px 5px;
-  border-radius: 10px;
+  border-radius: 6px;
   background-color: rgb(255, 255, 255);
 }
 .ltt{
   background-color: rgb(177, 220, 255);
 }
 .task_name{
+  padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .task_time{
-  font-size:15px;
+  font-size:14px;
+  padding-left:5px;
+  border-top:1px solid #999;
 }
 .total{
   text-align: center;

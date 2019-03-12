@@ -54,16 +54,33 @@ export default {
           lightnessltm: this.lightnessltm,
           fontColorltm: this.fontColorltm,
           isAutoFin: this.isAutoFin
+        },
+        success () {
+          wx.showToast({
+            title: '保存成功',
+            mask: true
+          })
         }
       })
     },
     reset () {
-      wx.removeStorage({
-        key: 'localSetting',
+      let _this = this;
+      wx.showModal({
+        title: '提示',
+        content: '确定恢复初始设置',
         success (res) {
-          console.log(res.errMsg)
+          if (res.confirm) {
+            wx.removeStorage({
+              key: 'localSetting',
+              success (res) {
+                console.log(res.errMsg)
+              }
+            });
+              _this.colornow = _this.colornor = _this.colorltm = _this.lightnessnor = _this.lightnessltm = 'rgba(255, 255, 255, 255)';
+              _this.isAutoFin = false;
+          }
         }
-      })
+      });
     },
     aboutAutoFin () {
       let _this = this;
@@ -240,14 +257,14 @@ export default {
   onShow () {
   },
   onHide () {
-    this.save();
+    // this.save();
   }
 }
 </script>
 
 <style scoped>
 #index{
-  background-color:rgb(240,240,240);
+  background-color:rgb(230,230,230);
 }
 .control{
   background-color: rgb(255,255,255);
