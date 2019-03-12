@@ -122,7 +122,7 @@ export default{
         }
         // 返回主页
         wx.navigateBack({
-          delta: 9
+          delta: 1
         })
         this.task_name = '';
       } else {

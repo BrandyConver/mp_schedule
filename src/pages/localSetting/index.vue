@@ -5,7 +5,6 @@
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
       <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="aboutAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
-      <div><button @tap="FINNOW">AUTOFIN</button></div>
       <div class="btns">
         <button @click="save" >save</button>
         <button @click="reset">reset</button>
@@ -44,14 +43,6 @@ export default {
     }
   },
   methods: {
-    FINNOW () {
-      wx.cloud.callFunction({
-        name: 'autoFin',
-        data: {}
-      }).then(res => {
-        console.log(res)
-      })
-    },
     save () {
       wx.setStorage({
         key: 'localSetting',

@@ -8,7 +8,7 @@
       </div>
       <div class="sp_ard"><span>任务状态:</span><span>{{task.finished?'已完成':'未完成'}}</span></div>
       <div v-if="task.long_term">
-        <div class="sp_ard"><span>任务时间：</span><span>长期任务</span></div>
+        <div class="sp_ard"><span>任务时间:</span><span>长期任务</span></div>
       </div>
       <div v-else>
         <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
@@ -25,7 +25,6 @@
 </template>
 
 <script>
-
 export default {
   components: {
   },

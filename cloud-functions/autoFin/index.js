@@ -1,6 +1,7 @@
 // 自动标记完成
 const getTime = function () {
   let now = new Date();
+  // now.setHours(now.getHours() + 8) // BeiJin时间 = UTC时间 +8
   let nowMonth = now.getMonth() + 1;
   let nowDate = now.getDate();
   let nowHours = now.getHours();
@@ -17,15 +18,16 @@ exports.main = async (event, context) => {
   // 使用db.command查询指令查询ids
   const dbcmd = db.command;
   let now = getTime();
-  let result = db.collection('tasks').where({
-    end_time: dbcmd.lte(now),
-    finished: false,
-    long_term: false
-  }).update({
-    data: {
-      finished: true
-    }
-  }).then(res => res)
-  .catch(res => console.log(res.errMsg));
-  return result;
+  try {
+    return await db.collection('tasks').where({
+      end_time: dbcmd.lte(now),
+      long_term: false
+    }).update({
+        data: {
+          finished: true
+        }
+      })
+  } catch (e) {
+    console.error(e)
+  }
 };

@@ -6,6 +6,21 @@ export default {
     // logs.unshift(Date.now())
     // wx.setStorageSync('logs', logs)
     // 调用 autofin
+    wx.cloud.init();
+    wx.getStorage({
+      key: 'localSetting',
+      success (res) {
+        if (res.data.isAutoFin) {
+          console.log('autofin');
+          wx.cloud.callFunction({
+            name: 'autoFin',
+            data: {}
+          }).then(res => {
+            console.log(res.result)
+          })
+        };
+      }
+    });
   }
 }
 </script>

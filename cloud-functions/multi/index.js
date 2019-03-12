@@ -23,11 +23,10 @@ exports.main = async (event, context) => {
     try {
       return await db.collection('tasks').where({
         _id: dbcmd.in(ids)
-      })
-        .update({
+      }).update({
           data: {
             finished: true
-          },
+          }
         })
     } catch (e) {
       console.error(e)
