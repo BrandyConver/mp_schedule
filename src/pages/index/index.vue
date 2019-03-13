@@ -3,7 +3,8 @@
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
-        <input type="text" comfirm-type='search' placeholder="搜索标题或内容" @confirm='search' class='search' @input="clear">
+        <input type="text" comfirm-type='search' placeholder="搜索标题或内容" v-model="word" @confirm='search' class='search' @input="clear">
+        <img src="/static/icon/search.svg" alt="" @tap="search">
       </div>
       <div v-if="tasks.length>0" class="task_list" >
         <div class="task" :class="{ltt:task.long_term}" :style="{background:task.long_term?localSetting.lightnessltm:localSetting.lightnessnor}"
@@ -15,7 +16,7 @@
           </div>
         </div>
       </div>        
-      <div v-else class='no_task' :style="{minHeight:minHeight + 'px'}">没有未完成的任务</div>
+      <div v-else class='no_task' :style="{minHeight:minHeight + 'px'}">{{errMsg}}</div>
       <div class='space'></div>
     </div>
     
@@ -61,6 +62,7 @@ export default {
   store,
   data () {
     return {
+      errMsg: '没有未完成的任务',
       tasks: [],
       openid: '',
       appid: 'wx62021cbe5853225b',
@@ -89,12 +91,12 @@ export default {
       this.selected = e.mp.detail.value;
     },
     search (e) { // 全局搜索
-      let world = new RegExp(e.mp.detail.value.trim(), 'ig');
+      let word = new RegExp(this.word.trim(), 'ig');
       const dbtask = wx.cloud.database().collection('tasks');
       let schname = 
       dbtask.where({
         _openid: this.openid,
-        task_name: world
+        task_name: word
       }).get().then(res => {
         return res.data;
       }).catch(res => {
@@ -103,14 +105,14 @@ export default {
       let schdtl = 
       dbtask.where({
         _openid: this.opneid,
-        detail: world
+        detail: word
       }).get().then(res => {
         return res.data;
       }).catch(res => {
         console.log(res.errMsg);
       });
       Promise.all([schname, schdtl]).then(([result1, result2]) => {
-         // 合并 去重 set无法去重
+         // 合并 去重
         let result = result1.concat(result2).sort(function (cur, next) {
           if (cur._id > next._id) {
             return 1
@@ -118,11 +120,16 @@ export default {
             return -1
           } else { return 0 }
         });
-        let tasks = [result[0]];
-        for (let item of result) {
-          if (item._id !== tasks[tasks.length - 1]._id) {
-            tasks.push(item)
+        let tasks = [];
+        if (result.length > 0) {
+          tasks.push(result[0]);
+          for (let item of result) {
+            if (item._id !== tasks[tasks.length - 1]._id) {
+              tasks.push(item)
+            }
           }
+        } else {
+          this.errMsg = '没有符合的结果'
         }
         this.tasks = tasks;
       })
@@ -135,7 +142,8 @@ export default {
           success (res) {
             _this.tasks = res.data;
           }
-        })
+        });
+        this.errMsg = '没有未完成的任务';
       }
     },
     remove () {
@@ -295,6 +303,7 @@ export default {
   background-color:rgb(230,230,230);
 }
 .searchbox{
+  position: relative;
   height:35px;
   border-radius:20px;
   background-color: #fff;
@@ -302,8 +311,17 @@ export default {
   padding-left: 10px;
 }
 .searchbox input{
+  position: absolute;
+  width: 85%;
   height: 100%;
   line-height: 100%;
+}
+.searchbox img{
+  margin: 3px 0;
+  height: 85%;
+  width: 10%;
+  right: 8px;
+  position: absolute;
 }
 .space{
   height:1px;

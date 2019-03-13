@@ -24,15 +24,14 @@
 
 <script>
 import store from '../../components/store.js';
-// import vcolorpicker from 'vcolorpicker';
 export default {
   store,
   data () {
     return {
       windowHeight: '',
-      colornow: '', // 当前色调
-      colornor: '#fff',  
-      colorltm: '#fff',
+      colornow: '', // 当前颜色选择器的色调
+      colornor: 'rgb(255, 255, 255)',  
+      colorltm: 'rgb(255, 255, 255)',
       lightnessnor: '',
       lightnessltm: '',
       isPick: false,
@@ -43,9 +42,6 @@ export default {
     }
   },
   methods: {
-    testtap (e) {
-      console.log(e)
-    },
     save () {
       wx.setStorage({
         key: 'localSetting',
@@ -76,14 +72,18 @@ export default {
         content: '确定恢复初始设置',
         success (res) {
           if (res.confirm) {
-            wx.removeStorage({
+            wx.setStorage({
               key: 'localSetting',
-              success (res) {
-                console.log(res.errMsg)
+              data: {
+                lightnessnor: 'rgba(255, 255, 255, 255)',
+                colornor: 'rgba(255, 255, 255, 255)',
+                lightnessltm: 'linear-gradient(rgb(170, 218, 255), rgb(231, 245, 255))',
+                colorltm: 'rgba(255, 255, 255, 255)'
               }
-            });
-              _this.colornow = _this.colornor = _this.colorltm = _this.lightnessnor = _this.lightnessltm = 'rgba(255, 255, 255, 255)';
-              _this.isAutoFin = false;
+            })
+            _this.colornor = _this.colorltm = _this.lightnessnor = 'rgba(255, 255, 255, 255)';
+            _this.lightnessltm = 'linear-gradient(rgb(170, 218, 255), rgb(231, 245, 255))'
+            _this.isAutoFin = false;
           }
         }
       });
@@ -121,9 +121,11 @@ export default {
       ctxcl.fillRect(0, 0, 30, 200);
       ctxcl.draw();
       const ctxln = wx.createCanvasContext('canvas1');
+      if (!this.colornow) { this.colornow = 'rgb(255,255,255)' }
       let nowcolor = ctxln.createLinearGradient(10, 10, 190, 10); // 水平亮度条→ 上下左右预留10px 下同
+      let imgdata = this.colornow.match(/\d+/ig).map(item => parseInt(item));
       nowcolor.addColorStop(0, '#fff');
-      nowcolor.addColorStop(1, this.colornow);
+      nowcolor.addColorStop(1, `rgb(${imgdata[0]},${imgdata[1]},${imgdata[2]})`); // test `rgb(${res.data[0]},${res.data[1]},${res.data[2]})`
       ctxln.setFillStyle(nowcolor);
       ctxln.fillRect(0, 0, 200, 200);
       let mask = ctxln.createLinearGradient(10, 190, 10, 10); // 垂直渐变↑ 半透明黑
@@ -150,7 +152,6 @@ export default {
           height: 1,
           success (res) {
             imgdata = res.data.join(',');
-            console.log(res.data);
             let lightness = ctxln.createLinearGradient(10, 10, 190, 10);
             lightness.addColorStop(0, '#fff');
             // lightness.addColorStop(1, `rgba(${imgdata})`); // incorrect
