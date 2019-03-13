@@ -5,7 +5,6 @@
       <div class="control"><span>普通任务背景颜色</span><div class="colorpicker" :style="{background: lightnessnor, color:fontColornor}" id="cnor" @tap.stop="pickcolor($event)">#{{col_hex_nor}}</div></div>
       <div class="control"><span>长期任务背景颜色</span><div class="colorpicker" :style="{background: lightnessltm, color:fontColorltm}" id="cltm" @tap.stop="pickcolor($event)">#{{col_hex_ltm}}</div></div>
       <div class='switch control'><span>到期任务自动置为完成&nbsp;&nbsp;<span class="tipSpan" @tap="aboutAutoFin">?</span></span><switch @change="autoFinish" :value="isAutoFin" :checked="isAutoFin"/></div>
-      <div class="test"  @tap="testtap($event)">11111</div>
       <div class="btns">
         <button @click="save" >save</button>
         <button @click="reset">reset</button>
@@ -14,8 +13,8 @@
 
     <div class="bgmask" :style="{top:positionY+'px'}" v-show="isPick">
       <div class="pickcolorconp">
-        <canvas canvas-id="canvas1" id="canvas1" @tap.stop="setLightness($event)"></canvas>
-        <canvas canvas-id="canvas2" id="canvas2" @tap.stop="setColor($event)"></canvas>
+        <canvas canvas-id="canvas1" style="width: 200px; height: 200px" id="canvas1" @tap.stop="setLightness($event)"></canvas>
+        <canvas canvas-id="canvas2" style="width: 30px; height: 200px" id="canvas2" @tap.stop="setColor($event)"></canvas>
       </div>  
     </div>
 
@@ -151,9 +150,11 @@ export default {
           height: 1,
           success (res) {
             imgdata = res.data.join(',');
+            console.log(res.data);
             let lightness = ctxln.createLinearGradient(10, 10, 190, 10);
             lightness.addColorStop(0, '#fff');
-            lightness.addColorStop(1, `rgba(${imgdata})`);
+            // lightness.addColorStop(1, `rgba(${imgdata})`); // incorrect
+            lightness.addColorStop(1, `rgb(${res.data[0]},${res.data[1]},${res.data[2]})`);
             ctxln.setFillStyle(lightness);
             ctxln.fillRect(0, 0, 200, 200);
             // ctxln.draw();
@@ -162,6 +163,7 @@ export default {
             mask.addColorStop(1, 'rgba(0,0,0,0)');
             ctxln.setFillStyle(mask);
             ctxln.fillRect(0, 0, 200, 200);
+            // tiaoshi
             ctxln.draw();
             if (_this.targetId === 'cnor') {
               _this.colornor = `rgba(${imgdata})`;
@@ -372,11 +374,5 @@ canvas{
 }
 .space{
   height:1px;
-}
-.test{
-  width:50px;
-  height:50px;
-  color:red;
-  background: blue;
 }
 </style>

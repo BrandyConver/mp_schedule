@@ -318,7 +318,7 @@ export default {
   background-color: rgb(255, 255, 255);
 }
 .ltt{
-  background: linear-gradient(rgb(178, 222, 255), rgb(231, 245, 255));
+  background: linear-gradient(rgb(170, 218, 255), rgb(231, 245, 255));
 }
 .task_name{
   padding: 5px;
