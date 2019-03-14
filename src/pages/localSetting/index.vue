@@ -121,7 +121,9 @@ export default {
       ctxcl.fillRect(0, 0, 30, 200);
       ctxcl.draw();
       const ctxln = wx.createCanvasContext('canvas1');
-      if (!this.colornow) { this.colornow = 'rgb(255,255,255)' }
+      if (!this.colornow) { 
+        this.colornow = 'rgb(255,255,255)';
+      }
       let nowcolor = ctxln.createLinearGradient(10, 10, 190, 10); // 水平亮度条→ 上下左右预留10px 下同
       let imgdata = this.colornow.match(/\d+/ig).map(item => parseInt(item));
       nowcolor.addColorStop(0, '#fff');
@@ -249,7 +251,6 @@ export default {
   },
   onLoad () {
     let _this = this;
-    store.commit('setHeight', wx.getSystemInfoSync().windowHeight);
     this.windowHeight = store.state.deviceHeight;
     wx.getStorage({
       key: 'localSetting',

@@ -4,7 +4,8 @@
     "pages/edit/main",
     "pages/detail/main",
     "pages/localSetting/main",
-    "pages/finished/main"
+    "pages/finished/main",
+    "pages/self/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -13,5 +14,30 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#eeeeee"
   },
-  "cloud": true
+  "cloud": true,
+  "tabBar": {
+    "color": "#222",
+    "selectedColor": "#1AA029",
+    "backgroundColor": "#EAEAEA",
+    "list": [
+      {
+        "pagePath": "pages/index/main",
+        "text": "任务",
+        "iconPath": "/static/icon/task.png",
+        "selectedIconPath": "/static/icon/task2.png"
+      },
+      {
+        "pagePath": "pages/finished/main",
+        "text": "已完成",
+        "iconPath": "/static/icon/finish.png",
+        "selectedIconPath": "/static/icon/finish2.png"
+      },
+      {
+        "pagePath": "pages/self/main",
+        "text": "我的",
+        "iconPath": "/static/icon/self.png",
+        "selectedIconPath": "/static/icon/self2.png"
+      }
+    ]
+  }
 }

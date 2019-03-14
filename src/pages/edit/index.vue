@@ -1,5 +1,5 @@
 <template>
-	<div id="edit" :style="{minHeight:windowHeight -10 + 'px'}">
+	<div id="edit" :style="{minHeight:windowHeight + 10 + 'px'}">
 		<form action="" class="data">
       <div class="space"></div>
 			<input type="text" class="task_name control" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">

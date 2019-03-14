@@ -1,5 +1,5 @@
 <template>
-  <div id="detail" :style="{minHeight:windowHeight -10 + 'px'}">
+  <div id="detail" :style="{minHeight:windowHeight + 10 + 'px'}">
     <div class="task_content">
       <div class="task_name">{{task.task_name}}</div>
       <div class="detail">
@@ -113,7 +113,7 @@ export default {
 #detail{
   background-color: rgb(230,230,230);
   border: 1px solid rgb(230,230,230);
-  font-size: 20px;
+  font-size: 18px;
 }
 .task_content>div{
   margin:10px 0;
@@ -149,6 +149,7 @@ export default {
   padding:10px 10px;
 }
 .buttons{
+  padding: 2px 0;
   justify-content: space-between;
   position: fixed;
   bottom:0;

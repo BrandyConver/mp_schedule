@@ -1,8 +1,8 @@
 <template>
   <div id="index" :style="{minHeight:windowHeight + 'px'}" @click.stop="hideTip">
-    <div class='searchbox'>
+    <!-- <div class='searchbox'>
       <input type="text" comfirm-type='search' placeholder="搜索" @confirm='search' class='search' @input="clear">
-    </div>
+    </div> -->
     <div v-if="tasks.length>0" class="task_list" >
       <div class="task" :class="{ltt:task.long_term}" v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="tip($event, task._id)">
         <div class="task_name">{{task.task_name}}</div>
@@ -68,22 +68,22 @@ export default {
         console.log(res.errMsg);
       });
     },
-    search (e) {
-      let word = new RegExp(e.mp.detail.value.trim(), 'ig');
-      let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
-      this.tasks = result;
-    },
-    clear (e) {
-      let _this = this;
-      if (e.mp.detail.value === '') {
-        wx.getStorage({
-          key: 'fintasks',
-          success (res) {
-            _this.tasks = res.data;
-          }
-        })
-      }
-    },
+    // search (e) {
+    //   let word = new RegExp(e.mp.detail.value.trim(), 'ig');
+    //   let result = this.tasks.filter(task => task.task_name.search(word) >= 0);
+    //   this.tasks = result;
+    // },
+    // clear (e) {
+    //   let _this = this;
+    //   if (e.mp.detail.value === '') {
+    //     wx.getStorage({
+    //       key: 'fintasks',
+    //       success (res) {
+    //         _this.tasks = res.data;
+    //       }
+    //     })
+    //   }
+    // },
     tip (e, id) {
       this.floatTip = {
         selected: id,
@@ -187,7 +187,7 @@ export default {
 }
 .task{
   margin: 10px;
-  padding: 5px 5px;
+  padding: 10px 10px;
   border-radius: 6px;
   background-color: rgb(255, 255, 255);
 }
@@ -195,6 +195,7 @@ export default {
   background-color: rgb(177, 220, 255);
 }
 .task_name{
+  font-size: 18px;
   padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -202,7 +203,7 @@ export default {
 }
 .task_time{
   font-size:14px;
-  padding-left:5px;
+  padding: 5px 0 0 5px;
   border-top:1px solid #999;
 }
 .total{

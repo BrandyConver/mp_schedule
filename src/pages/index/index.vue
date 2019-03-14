@@ -21,7 +21,7 @@
     </div>
     
     <div v-if="multi" class="task_list " >
-      <div class='space'></div>
+      <div class='space2'></div>
       <checkbox-group  @change="select">
         <div class="task" v-for="task of tasks" :key="task._id">
             <label :for="task._id" class="checkbox_label">
@@ -36,16 +36,16 @@
             </label>
         </div>
       </checkbox-group>
-      <div class='space2'></div>
+      <div class='space1'></div>
     </div>
 
     <div class="button-group">
       <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
-      <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
+      <!-- <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
       <div v-if="showMenu" class='menu'>
         <div class="menuli" @click="toFinished">查看完成</div>
         <div class="menuli"><a href='../localSetting/main'>更多设置</a></div>
-      </div>
+      </div> -->
       <div class="multi_btn" v-if="multi">
         <div @click="remove">删除</div>
         <div @click="finish">标记完成</div>
@@ -66,7 +66,7 @@ export default {
       tasks: [],
       openid: '',
       appid: 'wx62021cbe5853225b',
-      timecolor: ['blue', 'rgb(120,20,20)'],
+      timecolor: ['rgb(10, 60, 40)', 'rgb(120,20,20)'],
       time: getTime(),
       minHeight: '',
       showMenu: false,
@@ -331,7 +331,7 @@ export default {
 }
 .task{
   margin: 10px;
-  padding: 5px 5px;
+  padding: 10px 10px;
   border-radius: 6px;
   background-color: rgb(255, 255, 255);
 }
@@ -339,6 +339,7 @@ export default {
   background: linear-gradient(rgb(170, 218, 255), rgb(231, 245, 255));
 }
 .task_name{
+  font-size: 18px;
   padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -347,7 +348,7 @@ export default {
 .task_time{
   border-top:1px solid #999;
   font-size:14px;
-  padding-left:5px;
+  padding: 5px 0 0 5px;
 }
 .no_task{
   text-align: center;
@@ -408,7 +409,7 @@ export default {
 .multi_btn{
   position:fixed;
   width:100%;
-  bottom:0px;
+  top: 0px;
   height:50px;
   font-size: 20px;
   font-family: 'Microsoft-Yahei';
@@ -417,7 +418,7 @@ export default {
   flex-direction: row;
   justify-content: space-around;
   background-color: #FFF;
-  box-shadow:0px -1px 10px #666;
+  box-shadow:0px 1px 10px #666;
 }
 .multi_btn>div{
   padding:2px;
