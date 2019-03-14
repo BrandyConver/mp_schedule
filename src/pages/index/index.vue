@@ -1,5 +1,5 @@
 <template>
-  <div id="index" :style="{minHeight:minHeight + 'px'}" @click="hideMenu">
+  <div id="index" :style="{minHeight:minHeight + 'px'}" >
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
@@ -41,11 +41,6 @@
 
     <div class="button-group">
       <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
-      <!-- <div @click.stop="openMenu" v-show="!(showMenu||multi)"><img class="openmenu" src="/static/icon/menu.png" ></div>
-      <div v-if="showMenu" class='menu'>
-        <div class="menuli" @click="toFinished">查看完成</div>
-        <div class="menuli"><a href='../localSetting/main'>更多设置</a></div>
-      </div> -->
       <div class="multi_btn" v-if="multi">
         <div @click="remove">删除</div>
         <div @click="finish">标记完成</div>
@@ -69,7 +64,6 @@ export default {
       timecolor: ['rgb(10, 60, 40)', 'rgb(120,20,20)'],
       time: getTime(),
       minHeight: '',
-      showMenu: false,
       multi: false,
       selected: [],
       localSetting: {}
@@ -80,12 +74,6 @@ export default {
     toDetail (id) {
       const url = '/pages/detail/main?id=' + id;
       wx.navigateTo({url});
-    },
-    openMenu () {
-      this.showMenu = true;
-    },
-    hideMenu () {
-      this.showMenu = false;
     },
     select (e) {
       this.selected = e.mp.detail.value;
@@ -366,16 +354,6 @@ export default {
 .check_body{
   flex:auto;
 }
-.openmenu{
-  width:36px;
-  height:36px;  
-  padding:10px;
-  position:fixed;
-  border-radius:35px;
-  background-color: rgba(41, 179, 128,0.5);
-  bottom:20px;
-  left:20px;
-}
 .toedit{
   width:50px;
   height:50px;
@@ -386,38 +364,19 @@ export default {
   bottom:20px;
   right:20px;
 }
-.menu{
-  padding:5px 0;
-  display:inline-flex;
-  flex-direction: column;
-  background-color:#FFF;
-  border-radius:10px;
-  position:fixed;
-  bottom:20px;
-  left:20px;
-  box-shadow:0px 0px 15px #999;
-}
-.menu>div{
-  font-size:20px;
-  border-bottom:2px solid #eee;
-  padding:10px 5px;
-  text-align:center;
-}
-.menu>div:last-child{
-  border:none;
-}
 .multi_btn{
   position:fixed;
   width:100%;
   top: 0px;
   height:50px;
-  font-size: 20px;
+  font-size: 18px;
   font-family: 'Microsoft-Yahei';
   align-items: center;
   display:flex;
   flex-direction: row;
+  border-top: 1px solid #999;
   justify-content: space-around;
-  background-color: #FFF;
+  background-color: #eee;
   box-shadow:0px 1px 10px #666;
 }
 .multi_btn>div{
