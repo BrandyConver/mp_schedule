@@ -1,5 +1,5 @@
 <template>
-  <div id="detail" :style="{minHeight:windowHeight + 10 + 'px'}">
+  <div id="detail" :style="{minHeight:windowHeight + 50 + 'px'}">
     <div class="task_content">
       <div class="task_name">{{task.task_name}}</div>
       <div class="detail">
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     finish () {
-      this.taks.doc(this.id).update({
+      this.tasks.doc(this.id).update({
         data: {
           finished: true
         }
@@ -169,7 +169,7 @@ export default {
   padding:10px 10px;
 }
 .buttons{
-  padding: 2px 0;
+  padding: 5px 0;
   justify-content: space-between;
   position: fixed;
   bottom:0;

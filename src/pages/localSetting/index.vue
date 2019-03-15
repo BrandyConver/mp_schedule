@@ -342,6 +342,7 @@ canvas{
   position:fixed;
   bottom: 0;
   width: 100%;
+  background: rgb(230,230,230)
 }
 .btns button{
   height: 40px;

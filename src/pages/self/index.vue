@@ -2,7 +2,6 @@
   <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false">
     <div>
       <div class="space"></div>
-      #self #
       <a href="/pages/statistics/main"><div class="control">
         <span><img src="/static/icon/statistics.svg" alt="">&nbsp;&nbsp;任务统计</span>
         <arrow></arrow>
@@ -50,10 +49,8 @@ export default {
 #index{
   background-color:rgb(230,230,230);
 }
-arrow{
-  display: inline-block;
-}
 .control{
+  /* box-sizing: border-box; */
   background-color: rgb(255,255,255);
   padding: 5px 10px;
   margin-top:10px;
@@ -64,6 +61,7 @@ arrow{
   align-items: center;
 }
 .control img{
+  transform: translateY(2px);
   display: inline-block;
   width: 20px;
   height: 20px;

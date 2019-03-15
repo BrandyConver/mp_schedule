@@ -177,6 +177,7 @@ export default{
   background-color: rgb(230,230,230);
 }
 .control{
+  box-sizing: border-box;
   background-color: rgb(255,255,255);
   margin-top:10px;
   height:35px;
@@ -207,10 +208,10 @@ switch{
   display: inline-block;
 }
 #detail{
+  padding-right: 10px;
   background-color: #FFF;
   width:100%;
   min-height:140px;
-  /* max-height:140px; */
 }
 .save{
   position:absolute;
