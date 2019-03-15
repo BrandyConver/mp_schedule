@@ -3,20 +3,17 @@
     <div>
       <div class="space"></div>
       #self #
-      <a href="/pages/localSetting/main"><div class="control">
-        <span><img src="/static/icon/setting.svg" alt="">任务统计</span>
-        <!-- <img src=""> -->
-        <span>></span>
+      <a href="/pages/statistics/main"><div class="control">
+        <span><img src="/static/icon/statistics.svg" alt="">&nbsp;&nbsp;任务统计</span>
+        <arrow></arrow>
+      </div></a>
+      <a href="/pages/finished/main"><div class="control">
+        <span><img src="/static/icon/finished.svg" alt="">&nbsp;&nbsp;已完成任务</span>
+        <arrow></arrow>
       </div></a>
       <a href="/pages/localSetting/main"><div class="control">
-        <span><img src="/static/icon/setting.svg" alt="">已完成任务</span>
-        <!-- <img src=""> -->
-        <span>></span>
-      </div></a>
-      <a href="/pages/localSetting/main"><div class="control">
-        <span><img src="/static/icon/setting.svg" alt="">设置</span>
-        <!-- <img src=""> -->
-        <span>></span>
+        <span><img src="/static/icon/setting.svg" alt="">&nbsp;&nbsp;设置</span>
+        <arrow></arrow>
       </div></a>
     </div>
   </div>
@@ -24,12 +21,16 @@
 
 <script>
 import store from '../../components/store.js';
+import arrow from '../../components/arrow.vue';
 export default {
   store,
   data () {
     return {
       windowHeight: ''
     }
+  },
+  components: {
+    'arrow': arrow
   },
   methods: {
   },
@@ -41,8 +42,6 @@ export default {
   onShow () {
   },
   onHide () {
-    // this.save();
-    this.isPick = false;
   }
 }
 </script>
@@ -50,6 +49,9 @@ export default {
 <style scoped>
 #index{
   background-color:rgb(230,230,230);
+}
+arrow{
+  display: inline-block;
 }
 .control{
   background-color: rgb(255,255,255);
@@ -62,6 +64,7 @@ export default {
   align-items: center;
 }
 .control img{
+  display: inline-block;
   width: 20px;
   height: 20px;
 }

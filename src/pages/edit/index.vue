@@ -180,7 +180,7 @@ export default{
   background-color: rgb(255,255,255);
   margin-top:10px;
   height:35px;
-  padding:5px;
+  padding:5px 10px;
   line-height: 35px;
 }
 .task_name{
@@ -209,7 +209,8 @@ switch{
 #detail{
   background-color: #FFF;
   width:100%;
-  height:140px;
+  min-height:140px;
+  /* max-height:140px; */
 }
 .save{
   position:absolute;

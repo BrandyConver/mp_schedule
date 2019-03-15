@@ -1,11 +1,13 @@
 {
   "pages": [
     "pages/index/main",
+    "pages/self/main",
+    "pages/agenda/main",
     "pages/edit/main",
     "pages/detail/main",
     "pages/localSetting/main",
     "pages/finished/main",
-    "pages/self/main"
+    "pages/statistics/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -27,10 +29,10 @@
         "selectedIconPath": "/static/icon/task2.png"
       },
       {
-        "pagePath": "pages/finished/main",
-        "text": "已完成",
-        "iconPath": "/static/icon/finish.png",
-        "selectedIconPath": "/static/icon/finish2.png"
+        "pagePath": "pages/agenda/main",
+        "text": "日程",
+        "iconPath": "/static/icon/agenda.png",
+        "selectedIconPath": "/static/icon/agenda2.png"
       },
       {
         "pagePath": "pages/self/main",

@@ -6,7 +6,7 @@
         <span>任务详情：</span>
         <div >{{task.detail}}</div>
       </div>
-      <div class="sp_ard"><span>任务状态:</span><span>{{task.finished?'已完成':'未完成'}}</span></div>
+      <div class="sp_ard"><span>任务状态:</span><span class="status">{{task.finished?'已完成':'未完成'}}</span></div>
       <div v-if="task.long_term">
         <div class="sp_ard"><span>任务时间:</span><span>长期任务</span></div>
       </div>
@@ -19,6 +19,7 @@
 
     <div class="buttons" v-show="isCreator">
       <span @click="toEdit"><img src="/static/icon/edit.png" alt=""></span>
+      <span @click="finish"><img src="/static/icon/finishtask.png" alt=""></span>
       <span @click="delet"><img src="/static/icon/del1.png" alt=""></span>
     </div>
   </div>
@@ -37,6 +38,19 @@ export default {
     }
   },
   methods: {
+    finish () {
+      this.taks.doc(this.id).update({
+        data: {
+          finished: true
+        }
+      }).then(res => {       
+        wx.navigateBack({
+          delta: 1
+        })
+      }).catch(res => {
+        console.log(res.errMsg)
+      });
+    },
     // 删除任务
     delet () {
       let _this = this;
@@ -54,7 +68,7 @@ export default {
                   mask: true
                 })
               }
-            })
+            });
             wx.navigateBack({
               delta: 1
             })
@@ -131,6 +145,11 @@ export default {
   width: 30%;
   flex: none
 }
+.status{
+  margin-left: 40px;
+  flex: 1;
+  text-align: center;
+}
 .task_name{
   text-align: center;
   font-size: 24px;
@@ -142,7 +161,8 @@ export default {
 .detail>div{
   font-size: 18px;
   white-space: pre-wrap;
-  height: 140px;
+  min-height: 100px;
+  max-height: 240px;
   line-height: 34px;
   overflow:auto;
   background-color: #fff;
