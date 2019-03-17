@@ -1,0 +1,10 @@
+{
+  "keywords": [
+    "mpvue",
+    "calendar"
+  ],
+  "license": "ISC",
+  "main": "./src/my-calendar.vue",
+  "name": "my-calendar",
+  "version": "0.0.1"
+}

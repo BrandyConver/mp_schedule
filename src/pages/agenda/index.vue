@@ -6,9 +6,10 @@
 
 <script>
 import store from '../../components/store.js';
-// import Calendar from 'mpvue-calendar';
-import Calendar from '../../components/mpvue-calendar/src/mpvue-calendar.vue'; // 修改 calendar
-import '../../components/mpvue-calendar/src/style.css';
+import Calendar from 'mpvue-calendar'; 
+import 'mpvue-calendar/src/style.css';
+// import myCalendar from '../../components/myCalendar/src/my-calendar.vue'; // 修改 calendar
+// import '../../components/myCalendar/src/style.css';
 
 export default {
   store,

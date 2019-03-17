@@ -58,103 +58,11 @@
   const todayString = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('-');
   export default {
     props: {
-      multi: {
-        type: Boolean,
-        default: false
-      },
-      arrowLeft: {
-        type: String,
-        default: ''
-      },
-      arrowRight: {
-        type: String,
-        default: ''
-      },
-      // clean: {
-      //   type: Boolean,
-      //   default: false
-      // },
-      now: {
-        type: [String, Boolean],
-        default: true
-      },
-      range:{
-        type: Boolean,
-        default: false
-      },
-      completion:{
-        type: Boolean,
-        default: false
-      },
-      value: {
-        type: Array,
-        default: function(){
-          return []
-        }
-      },
-      begin:  {
-        type: Array,
-        default: function(){
-          return []
-        }
-      },
-      end:  {
-        type: Array,
-        default: function(){
-          return []
-        }
-      },
-      zero:{
-        type: Boolean,
-        default: false
-      },
-      disabled:{
-        type: Array,
-        default: function(){
-          return []
-        }
-      },
-      almanacs:{
-        type: Object,
-        default: function(){
-          return {}
-        }
-      },
-      tileContent:{
-        type: Array,
-        default: function(){
-          return []
-        }
-      },
-      lunar: {
-        type: Boolean,
-        default: false
-      },
-      monFirst: {
-        type: Boolean,
-        default: false
-      },
-      weeks: {
-        type: Array,
-        default:function(){
-          return this.monFirst ? ['一', '二', '三', '四', '五', '六', '日'] : ['日', '一', '二', '三', '四', '五', '六']
-        }
-      },
-      months:{
-        type: Array,
-        default:function(){
-          return ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
-        }
-      },
       events:  {
-        type: Object,
+        type: Object, // Array
         default: function(){
           return {}
         }
-      },
-      weekSwitch: {
-        type: Boolean,
-        default: false
       }
     },
     data() {
@@ -173,37 +81,6 @@
         isIos: true,
         showToday: {},
         monthText: '',
-        festival:{
-          lunar:{
-            "1-1":"春节",
-            "1-15":"元宵节",
-            "2-2":"龙头节",
-            "5-5":"端午节",
-            "7-7":"七夕节",
-            "7-15":"中元节",
-            "8-15":"中秋节",
-            "9-9":"重阳节",
-            "10-1":"寒衣节",
-            "10-15":"下元节",
-            "12-8":"腊八节",
-            "12-23":"小年",
-          },
-          gregorian:{
-            "1-1":"元旦",
-            "2-14":"情人节",
-            "3-8":"妇女节",
-            "3-12":"植树节",
-            "5-1":"劳动节",
-            "5-4":"青年节",
-            "6-1":"儿童节",
-            "7-1":"建党节",
-            "8-1":"建军节",
-            "9-10":"教师节",
-            "10-1":"国庆节",
-            "12-24":"平安夜",
-            "12-25":"圣诞节",
-          },
-        },
         rangeBegin: [],
         rangeEnd: [],
         multiDaysData: [],
