@@ -85,7 +85,14 @@ export default {
       dbtask.where({
         _openid: this.openid,
         task_name: word
-      }).get().then(res => {
+      }).field({
+        task_name: true,
+        _id: true,
+        start_time: true,
+        end_time: true,
+        long_term: true
+      })
+      .get().then(res => {
         return res.data;
       }).catch(res => {
         console.log(res.errMsg);
@@ -94,32 +101,47 @@ export default {
       dbtask.where({
         _openid: this.opneid,
         detail: word
-      }).get().then(res => {
+      }).field({
+        task_name: true,
+        _id: true,
+        start_time: true,
+        end_time: true,
+        long_term: true
+      })
+      .get().then(res => {
         return res.data;
       }).catch(res => {
         console.log(res.errMsg);
       });
+      // 遍历 合并 去重
+      // Promise.all([schname, schdtl]).then(([result1, result2]) => {
+      //   let result = result1.concat(result2).sort(function (cur, next) {
+      //     if (cur._id > next._id) {
+      //       return 1
+      //     } else if (cur._id < next._id) {
+      //       return -1
+      //     } else { return 0 }
+      //   });
+      //   let tasks = [];
+      //   if (result.length > 0) {
+      //     tasks.push(result[0]);
+      //     for (let item of result) {
+      //       if (item._id !== tasks[tasks.length - 1]._id) {
+      //         tasks.push(item)
+      //       }
+      //     }
+      //   } else {
+      //     this.errMsg = '没有符合的结果'
+      //   }
+      //   this.tasks = tasks;
+      // })
+      // 用 Set数据结构 合并 去重
       Promise.all([schname, schdtl]).then(([result1, result2]) => {
-         // 合并 去重
-        let result = result1.concat(result2).sort(function (cur, next) {
-          if (cur._id > next._id) {
-            return 1
-          } else if (cur._id < next._id) {
-            return -1
-          } else { return 0 }
-        });
-        let tasks = [];
-        if (result.length > 0) {
-          tasks.push(result[0]);
-          for (let item of result) {
-            if (item._id !== tasks[tasks.length - 1]._id) {
-              tasks.push(item)
-            }
-          }
-        } else {
+        let result = [...new Set([...result1, ...result2])]
+        if (result.length <= 0) {
           this.errMsg = '没有符合的结果'
         }
-        this.tasks = tasks;
+        this.tasks = result;
       })
     },
     clear (e) {
@@ -185,7 +207,15 @@ export default {
       db.collection('tasks').where({
         _openid: this.openid,
         finished: false
-      }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc').skip(skip).get()
+      }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc')
+      .field({
+        task_name: true,
+        _id: true,
+        start_time: true,
+        end_time: true,
+        long_term: true
+      })
+      .skip(skip).get()
       .then(res => {
         if (type === 'load') {
           this.tasks = this.tasks.concat(res.data);

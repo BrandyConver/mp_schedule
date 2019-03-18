@@ -1,16 +1,10 @@
 const getDateRange = function (year, month) {
-  let now = new Date(year, month, 1);
-  let nowMonth = now.getMonth();
-  let nextMonth = nowMonth + 1;
-  if (nowMonth < 10) {
-    nowMonth = '0' + nowMonth;
-  }
-  if (nextMonth < 10) {
-    nextMonth = '0' + nextMonth;
+  if (month < 10) {
+    month = '0' + month;
   }
   return {
-    from: now.getFullYear() + '-' + nowMonth + '-' + '01',
-    to: now.getFullYear() + '-' + nextMonth + '-' + '01'
+    from: `${year}-${month}-01`,
+    to: `${year}-${month}-31`
   }
 }
 
@@ -19,20 +13,24 @@ cloud.init()
 const db = cloud.database()
 const dbcmd = db.command;
 
-exports.main = (event, context) => {
-
-
+exports.main = async (event) => {
   let curYear = event.curYear;
   let curMonth = event.curMonth;
   let {from, to} = getDateRange(curYear, curMonth);
-  db.collection('tasks').where({
+  let data = db.collection('tasks').where({
     _openid: event.userInfo.openId,
     start_time: dbcmd.lt(to),
-    end_time: dbcmd.gte(from)
+    end_time: dbcmd.gte(from),
+    long_term: false,
+    finished: false
+  }).field({
+    task_name: true,
+    _id: true,
+    start_time: true,
+    end_time: true
   })
-  return {
-    openid: event.userInfo.openId,
-    event: event,
-    context: context
-  }
+  .get().then(res => {
+    return res.data
+  })
+  return data;
 }
