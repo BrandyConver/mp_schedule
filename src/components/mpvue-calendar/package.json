@@ -1,0 +1,54 @@
+{
+  "_from": "mpvue-calendar",
+  "_id": "mpvue-calendar@2.1.1",
+  "_inBundle": false,
+  "_integrity": "sha512-cguxVXBo5E0hd9NrGztBC/IMR2KJtygmO8bDgByxAz1r7dJwBLXzYyox+1wgOVrdmwYylYySDermrmNJbdSevw==",
+  "_location": "/mpvue-calendar",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "mpvue-calendar",
+    "name": "mpvue-calendar",
+    "escapedName": "mpvue-calendar",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/mpvue-calendar/-/mpvue-calendar-2.1.1.tgz",
+  "_shasum": "adf01e9779d0a9494657c0fa93643f89d84228a4",
+  "_spec": "mpvue-calendar",
+  "_where": "F:\\Vue\\mp_schedule",
+  "author": {
+    "name": "hzy"
+  },
+  "bugs": {
+    "url": "https://github.com/Hzy0913/mpvue-calendar/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "mpvue calendar",
+  "homepage": "https://github.com/Hzy0913/mpvue-calendar#readme",
+  "keywords": [
+    "mpvue",
+    "vue",
+    "calendar",
+    "小程序",
+    "日历组件"
+  ],
+  "license": "ISC",
+  "main": "./src/mpvue-calendar.vue",
+  "name": "mpvue-calendar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hzy0913/mpvue-calendar.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "2.1.1"
+}

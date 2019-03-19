@@ -17,7 +17,7 @@ exports.main = async (event) => {
   let curYear = event.curYear;
   let curMonth = event.curMonth;
   let {from, to} = getDateRange(curYear, curMonth);
-  let data = db.collection('tasks').where({
+  let data = await db.collection('tasks').where({
     _openid: event.userInfo.openId,
     start_time: dbcmd.lt(to),
     end_time: dbcmd.gte(from),

@@ -13,11 +13,8 @@
 </template>
 
 <script>
+import getTime from '../../components/getTime.js';
 import store from '../../components/store.js';
-// import Calendar from 'mpvue-calendar'; 
-// import 'mpvue-calendar/src/style.css';
-// import myCalendar from '../../components/myCalendar/src/my-calendar.vue';
-// import '../../components/myCalendar/src/style.css';
 import Calendar from '../../components/mpvue-calendar/src/mpvue-calendar.vue';
 import '../../components/mpvue-calendar/src/style.css';
 
@@ -28,8 +25,9 @@ export default {
       windowHeight: '',
       events: {},
       todayTasks: [],
-      dftYear: new Date().getFullYear,
-      dftMonth: new Date().getMonth + 1
+      curYear: new Date().getFullYear(),
+      curMonth: new Date().getMonth() + 1,
+      time: getTime()
     }
   },
   components: {
@@ -37,8 +35,8 @@ export default {
   },
   methods: {
     select (val1, val2) {
+      this.todayTasks = [];
       if (val2.event) {
-        this.todayTasks = [];
         for (let task of this.allTasks) {
           if (val2.event.indexOf(task._id) >= 0) {
             this.todayTasks.push(task);
@@ -46,23 +44,24 @@ export default {
         }
       }
     },
-    next (val) {
-      console.log('next', val);
+    next (year, month) {
+      this.getTaskEvent(year, month);
     },
-    prev (val) {
-      console.log('pre', val);
+    prev (year, month) {
+      this.getTaskEvent(year, month);
     },
-    selectYear (val) {
-      console.log('selectyear', val)
+    selectYear (year, month) {
+      this.getTaskEvent(year, month);
     },
-    selectMonth (val) {
-      console.log('selectmonth', val)
+    selectMonth (month, year) {
+      this.getTaskEvent(year, month);
     },
     toDetail (id) {
       const url = '/pages/detail/main?id=' + id;
       wx.navigateTo({url});
     },
-    getTaskEvent (year, month) {
+    // 获取选中月份的未完成任务 push数组不会触发视图更新
+    getTaskEvent (year = this.curYear, month = this.curMonth) {
       wx.cloud.callFunction({
         name: 'getTasksByMonth',
         data: {
@@ -70,23 +69,20 @@ export default {
           curMonth: month
         }
       }).then(res => {
-        // console.log(res.result)
         this.allTasks = res.result;
         for (let i = 0; i <= this.allTasks.length; i++) {
           let startMonth = parseInt(res.result[i].start_time.substr(5, 2))
           let endMonth = parseInt(res.result[i].end_time.substr(5, 2))
           let startDate = parseInt(res.result[i].start_time.substr(8, 2))
           let endDate = parseInt(res.result[i].end_time.substr(8, 2))
-          // start&end this month
           let eventStart = startDate
           let eventEnd = endDate
-          // start last month
           if (startMonth < month) {
-            eventStart = 1
+            eventStart = 1 // 始于上月，从一号开始
           }
           // end next month
           if (endMonth > month) {
-            eventEnd = 31 // 传入不存在的日期不会报错
+            eventEnd = 31 // 止于次月，最多到31号，传入不存在的日期不会报错
           }
           for (let eventNow = eventStart; eventNow <= eventEnd; eventNow++) {
             if (this.events[`${year}-${month}-${eventNow}`] === undefined) {
@@ -103,9 +99,14 @@ export default {
   },
   computed: {
   },
+  watch: {
+    curYear (newVal, oldVal) {
+      console.log('watch curYear', newVal, oldVal);
+    }
+  },
   onLoad () {
     this.windowHeight = store.state.deviceHeight;
-    this.getTaskEvent(new Date().getFullYear, new Date().getMonth + 1); // now year now month
+    this.getTaskEvent(new Date().getFullYear(), new Date().getMonth() + 1); // now year now month
   },
   onShow () {
   },
@@ -136,7 +137,6 @@ export default {
 .calendar{
   height: 200px;
 }
-
 
 .task{
   margin: 10px;
