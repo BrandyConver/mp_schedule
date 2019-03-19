@@ -5,7 +5,7 @@
       <div class="task" v-for="task of todayTasks" :key="task._id" @click="toDetail(task._id)">
         <div class="task_name" >{{task.task_name}}</div>
         <div class="task_time">
-          <span  :style="{ color: task.end_time>time?'rgb(10, 60, 40)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
+          <span  :style="{ color: task.end_time>time?'rgb(10, 60, 80)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
         </div>
       </div>
     </div> 
@@ -60,7 +60,7 @@ export default {
       const url = '/pages/detail/main?id=' + id;
       wx.navigateTo({url});
     },
-    // 获取选中月份的未完成任务 push数组不会触发视图更新
+    // 获取选中月份的未完成任务 
     getTaskEvent (year = this.curYear, month = this.curMonth) {
       wx.cloud.callFunction({
         name: 'getTasksByMonth',
@@ -86,7 +86,8 @@ export default {
           }
           for (let eventNow = eventStart; eventNow <= eventEnd; eventNow++) {
             if (this.events[`${year}-${month}-${eventNow}`] === undefined) {
-              this.events[`${year}-${month}-${eventNow}`] = [ res.result[i]._id ]
+              // 使用Vue.set添加属性，触发视图更新，直接添加属性不行
+              this.$set(this.events, `${year}-${month}-${eventNow}`, res.result[i]._id)
             } else {
               this.events[`${year}-${month}-${eventNow}`].push(res.result[i]._id)
             }
@@ -102,6 +103,10 @@ export default {
   watch: {
     curYear (newVal, oldVal) {
       console.log('watch curYear', newVal, oldVal);
+    },
+    events (newval, olival) {
+      console.log('events')
+      console.log(newval)
     }
   },
   onLoad () {

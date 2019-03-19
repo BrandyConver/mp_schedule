@@ -61,7 +61,7 @@ export default {
       tasks: [],
       openid: '',
       appid: 'wx62021cbe5853225b',
-      timecolor: ['rgb(10, 60, 40)', 'rgb(120,20,20)'],
+      timecolor: ['rgb(10, 60, 80)', 'rgb(120,20,20)'],
       time: getTime(),
       minHeight: '',
       multi: false,
@@ -113,28 +113,6 @@ export default {
       }).catch(res => {
         console.log(res.errMsg);
       });
-      // 遍历 合并 去重
-      // Promise.all([schname, schdtl]).then(([result1, result2]) => {
-      //   let result = result1.concat(result2).sort(function (cur, next) {
-      //     if (cur._id > next._id) {
-      //       return 1
-      //     } else if (cur._id < next._id) {
-      //       return -1
-      //     } else { return 0 }
-      //   });
-      //   let tasks = [];
-      //   if (result.length > 0) {
-      //     tasks.push(result[0]);
-      //     for (let item of result) {
-      //       if (item._id !== tasks[tasks.length - 1]._id) {
-      //         tasks.push(item)
-      //       }
-      //     }
-      //   } else {
-      //     this.errMsg = '没有符合的结果'
-      //   }
-      //   this.tasks = tasks;
-      // })
       // 用 Set数据结构 合并 去重
       Promise.all([schname, schdtl]).then(([result1, result2]) => {
         let result = [...new Set([...result1, ...result2])]
