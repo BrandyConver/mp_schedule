@@ -1,12 +1,15 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false">
-    <Calendar @select="select" ref="calendar" :events="events" @next="next" @prev="prev" @selectYear="selectYear" @selectMonth="selectMonth"  />
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false" @touchstart="touchStart" @touchend="touchEnd" >
+    <Calendar @select="select" ref="calendar" :events="events" @next="next" 
+    @prev="prev" @selectYear="selectYear" @selectMonth="selectMonth" @touchstart="touchStart" @touchend="touchEnd"  />
     <div  class="task_list" >
-      <div class="task" v-for="task of todayTasks" :key="task._id" @click="toDetail(task._id)">
-        <div class="task_name" >{{task.task_name}}</div>
-        <div class="task_time">
-          <span  :style="{ color: task.end_time>time?'rgb(10, 60, 80)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
-        </div>
+      <div class="task" v-for="task of todayTasks" :key="task._id" >
+        <navigator :url="'/pages/detail/main?id='+task._id" >
+          <div class="task_name" >{{task.task_name}}</div>
+          <div class="task_time">
+            <span  :style="{ color: task.end_time>time?'rgb(10, 30, 90)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
+          </div>
+        </navigator>
       </div>
     </div> 
   </div>
@@ -56,6 +59,25 @@ export default {
     selectMonth (month, year) {
       this.getTaskEvent(year, month);
     },
+    touchStart (e) {
+      this.touchStartX = e.clientX;
+      this.touchStartY = e.clientY;
+    },
+    touchEnd (e) {
+      if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50) {
+        if (e.mp.changedTouches[0].clientX - this.touchStartX > 200) {
+          // 向右划
+          wx.switchTab({
+            url: '/pages/index/main'
+          })
+        } else if (e.mp.changedTouches[0].clientX - this.touchStartX < -200) {
+          // 向左划
+          wx.switchTab({
+            url: '/pages/self/main'
+          })
+        }
+      }
+    },
     toDetail (id) {
       const url = '/pages/detail/main?id=' + id;
       wx.navigateTo({url});
@@ -101,13 +123,6 @@ export default {
   computed: {
   },
   watch: {
-    curYear (newVal, oldVal) {
-      console.log('watch curYear', newVal, oldVal);
-    },
-    events (newval, olival) {
-      console.log('events')
-      console.log(newval)
-    }
   },
   onLoad () {
     this.windowHeight = store.state.deviceHeight;
@@ -116,8 +131,6 @@ export default {
   onShow () {
   },
   onHide () {
-    // this.save();
-    this.isPick = false;
   }
 }
 </script>

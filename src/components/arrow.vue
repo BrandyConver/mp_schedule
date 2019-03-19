@@ -10,7 +10,7 @@
   height: 25px;
   display: inline-block;
   position: relative;
-  top: 2px;
+  top: 3px;
 }
 .bottom{
   width: 0;

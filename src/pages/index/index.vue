@@ -1,5 +1,5 @@
 <template>
-  <div id="index" :style="{minHeight:minHeight + 'px'}" >
+  <div id="index" :style="{minHeight:minHeight + 'px'}"  @touchstart="touchStart" @touchend="touchEnd" >
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
@@ -61,7 +61,7 @@ export default {
       tasks: [],
       openid: '',
       appid: 'wx62021cbe5853225b',
-      timecolor: ['rgb(10, 60, 80)', 'rgb(120,20,20)'],
+      timecolor: ['rgb(10, 30, 90)', 'rgb(120,20,20)'],
       time: getTime(),
       minHeight: '',
       multi: false,
@@ -122,7 +122,7 @@ export default {
         this.tasks = result;
       })
     },
-    clear (e) {
+    clear (e) { // 清空搜索框时恢复原tasks列表
       let _this = this;
       if (e.mp.detail.value === '') {
         wx.getStorage({
@@ -235,6 +235,23 @@ export default {
           .catch(res => console.log(res.errMsg));
         }
       });
+    },
+    touchStart (e) {
+      // console.log(e)
+      this.touchStartX = e.clientX;
+      this.touchStartY = e.clientY;
+    },
+    touchEnd (e) {
+      // console.log(e)
+      if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50 && e.mp.changedTouches[0].clientX - this.touchStartX < -200) {
+        // 向左划
+        wx.reLaunch({
+          url: '/pages/agenda/main'
+        })
+        // wx.switchTab({
+        //   url: '/pages/agenda/main'
+        // })
+      }
     }
   },
   computed: {
