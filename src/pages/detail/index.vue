@@ -8,7 +8,7 @@
       </div>
       <div class="sp_ard"><span>任务状态:</span><span class="status">{{task.finished?'已完成':'未完成'}}</span></div>
       <div v-if="task.long_term">
-        <div class="sp_ard"><span>任务时间:</span><span>长期任务</span></div>
+        <div class="sp_ard"><span>任务时间:</span><span class="status">长期任务</span></div>
       </div>
       <div v-else>
         <div class="sp_ard"><span>开始时间:</span><span>{{task.start_time}}</span></div>
@@ -16,25 +16,30 @@
       </div>
       <div class="sp_ard"><span>修改时间:</span><span>{{task.create_time}}</span></div>
     </div>
-
     <div class="buttons" v-show="isCreator">
       <span @click="toEdit"><img src="/static/icon/edit.png" alt=""></span>
       <span @click="finish"><img src="/static/icon/finishtask.png" alt=""></span>
       <span @click="delet"><img src="/static/icon/del1.png" alt=""></span>
     </div>
-  </div>
+    <div class="load-div" v-show="loading">
+      <Loading></Loading>
+    </div>
+  </div> 
 </template>
 
 <script>
+import loading from '../../components/loading.vue';
 export default {
   components: {
+    'Loading': loading
   },
   data () {
     return {
       task: {
       },
       isCreator: true,
-      windowHeight: wx.getSystemInfoSync().windowHeight
+      windowHeight: wx.getSystemInfoSync().windowHeight,
+      loading: true
     }
   },
   methods: {
@@ -84,6 +89,11 @@ export default {
         key: 'detail',
         data: this.task.detail
       })
+    }
+  },
+  watch: {
+    task () {
+      this.loading = false
     }
   },
   onShareAppMessage (res) {
@@ -184,5 +194,13 @@ export default {
 .buttons img{
   width:30px;
   height:30px;
+}
+.load-div{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(80, 80, 80, 0.7);
 }
 </style>

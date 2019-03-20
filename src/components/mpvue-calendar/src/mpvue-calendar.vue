@@ -19,7 +19,7 @@
         <div class="mc-year">{{year}}</div>
       </div>
     </div>
-    <table cellpadding="5">
+    <table cellpadding="5" @touchstart="touchStart" @touchend="touchEnd">
       <div class="mc-head">
         <div class="mc-head-box">
           <div v-for="(week, index) in weeks" :key="index" class="mc-week">{{week}}</div>
@@ -754,6 +754,22 @@
         }
         return data;
       },
+      touchStart (e) {
+        this.touchStartX = e.clientX;
+        this.touchStartY = e.clientY;
+        this.touchStartTimeStamp = e.timeStamp
+      },
+      touchEnd (e) {
+        if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50 && e.timeStamp - this.touchStartTimeStamp < 500) {
+          if (e.mp.changedTouches[0].clientX - this.touchStartX > 120) {
+            this.prev(e)
+            console.log('pre')
+          } else if (e.mp.changedTouches[0].clientX - this.touchStartX < -120) {
+            this.next(e)
+            console.log('next')
+          }
+        }
+      },
       prev(e) {
         e && e.stopPropagation();
         const weekSwitch = this.weekSwitch;
@@ -784,25 +800,25 @@
           this.$emit('prev', this.year, this.month + 1, weekIndex);
         }
         if (!this.weekSwitch) return changeMonth();
-        const changeWeek = () => {
-          this.weekIndex = this.weekIndex - 1;
-          this.days = [this.monthDays[this.weekIndex]];
-          this.setMonthRangeofWeekSwitch();
-          this.$emit('prev', this.year, this.month + 1, this.weekIndex);
-        }
-        const currentWeek = (this.days[0] || [])[0] || {};
-        if (currentWeek.lastMonth || currentWeek.day === 1) {
-          const monthChenged = () => {
-            const lastMonthLength = this.monthDays.length;
-            const startWeekIndex = currentWeek.lastMonth ? lastMonthLength - 1: lastMonthLength;
-            this.startWeekIndex = startWeekIndex;
-            this.weekIndex = startWeekIndex;
-            changeWeek();
-          }
-          changeMonth(monthChenged);
-        } else {
-          changeWeek();
-        }
+        // const changeWeek = () => {
+        //   this.weekIndex = this.weekIndex - 1;
+        //   this.days = [this.monthDays[this.weekIndex]];
+        //   this.setMonthRangeofWeekSwitch();
+        //   this.$emit('prev', this.year, this.month + 1, this.weekIndex);
+        // }
+        // const currentWeek = (this.days[0] || [])[0] || {};
+        // if (currentWeek.lastMonth || currentWeek.day === 1) {
+        //   const monthChenged = () => {
+        //     const lastMonthLength = this.monthDays.length;
+        //     const startWeekIndex = currentWeek.lastMonth ? lastMonthLength - 1: lastMonthLength;
+        //     this.startWeekIndex = startWeekIndex;
+        //     this.weekIndex = startWeekIndex;
+        //     changeWeek();
+        //   }
+        //   changeMonth(monthChenged);
+        // } else {
+        //   changeWeek();
+        // }
       },
       next(e) {
         e && e.stopPropagation();

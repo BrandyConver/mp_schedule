@@ -1,5 +1,5 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false" @touchstart="touchStart" @touchend="touchEnd" >
+  <div id="index" :style="{minHeight:windowHeight + 'px'}" @tap="isPick=false" >
     <Calendar @select="select" ref="calendar" :events="events" @next="next" 
     @prev="prev" @selectYear="selectYear" @selectMonth="selectMonth" @touchstart="touchStart" @touchend="touchEnd"  />
     <div  class="task_list" >
@@ -7,7 +7,7 @@
         <navigator :url="'/pages/detail/main?id='+task._id" >
           <div class="task_name" >{{task.task_name}}</div>
           <div class="task_time">
-            <span  :style="{ color: task.end_time>time?'rgb(10, 30, 90)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
+            <span  :style="{ color: task.end_time>time?'rgb(40, 90, 20)':'rgb(120,20,20)'}" >{{task.start_time}}~{{task.end_time}}</span>
           </div>
         </navigator>
       </div>

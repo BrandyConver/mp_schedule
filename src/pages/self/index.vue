@@ -1,5 +1,5 @@
 <template>
-  <div id="index" :style="{minHeight:windowHeight + 'px'}"   @touchstart="touchStart" @touchend="touchEnd"  >
+  <div id="index" :style="{minHeight:windowHeight + 'px'}"  >
     <div>
       <div class="space"></div>
       <a href="/pages/statistics/main"><div class="control">
@@ -32,21 +32,6 @@ export default {
     'arrow': arrow
   },
   methods: {
-    touchStart (e) {
-      this.touchStartX = e.clientX;
-      this.touchStartY = e.clientY;
-    },
-    // touchMove (e) {
-    //   console.log(e.clientX);
-    // },
-    touchEnd (e) {
-      if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50 && e.mp.changedTouches[0].clientX - this.touchStartX > 200) {
-        // 向右划
-        wx.switchTab({
-          url: '/pages/agenda/main'
-        })
-      }
-    }
   },
   computed: {
   },

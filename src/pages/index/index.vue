@@ -1,5 +1,5 @@
 <template>
-  <div id="index" :style="{minHeight:minHeight + 'px'}"  @touchstart="touchStart" @touchend="touchEnd" >
+  <div id="index" :style="{minHeight:minHeight + 'px'}" >
     <div v-show="!multi">
       <div class='space'></div>
       <div class='searchbox'>
@@ -38,7 +38,6 @@
       </checkbox-group>
       <div class='space1'></div>
     </div>
-
     <div class="button-group">
       <div><a href="/pages/edit/main" ><img  v-show="!multi" class="toedit" src="/static/icon/add.png" ></a></div>
       <div class="multi_btn" v-if="multi">
@@ -61,7 +60,7 @@ export default {
       tasks: [],
       openid: '',
       appid: 'wx62021cbe5853225b',
-      timecolor: ['rgb(10, 30, 90)', 'rgb(120,20,20)'],
+      timecolor: ['rgb(40, 90, 20)', 'rgb(110,30,20)'],
       time: getTime(),
       minHeight: '',
       multi: false,
@@ -204,6 +203,7 @@ export default {
           key: 'hometasks',
           data: this.tasks
         });
+      wx.hideLoading();
       }).catch(res => {
         console.log(res.errMsg);
       });
@@ -236,28 +236,12 @@ export default {
           .catch(res => console.log(res.errMsg));
         }
       });
-    },
-    touchStart (e) {
-      // console.log(e)
-      this.touchStartX = e.clientX;
-      this.touchStartY = e.clientY;
-    },
-    touchEnd (e) {
-      // console.log(e)
-      if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50 && e.mp.changedTouches[0].clientX - this.touchStartX < -200) {
-        // 向左划
-        wx.reLaunch({
-          url: '/pages/agenda/main'
-        })
-        // wx.switchTab({
-        //   url: '/pages/agenda/main'
-        // })
-      }
     }
   },
-  computed: {
-  },
   onLoad () {
+    wx.showLoading({
+      title: '加载中'
+    })
     wx.cloud.init();
     // 获取屏幕高度宽度，存入store
     wx.getSystemInfo({

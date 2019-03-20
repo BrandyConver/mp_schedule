@@ -10,7 +10,6 @@
         <button @click="reset">reset</button>
       </div>
     </div>
-
     <div class="bgmask" :style="{top:positionY+'px'}" v-show="isPick">
       <div class="pickcolorconp">
         <canvas canvas-id="canvas1" style="width: 200px; height: 200px" id="canvas1" @tap.stop="setLightness($event)"></canvas>

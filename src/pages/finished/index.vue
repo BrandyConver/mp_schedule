@@ -26,7 +26,7 @@ export default {
     return {
       tasks: [],
       openid: '',
-      timecolor: ['blue', 'rgb(120,20,20)'],
+      timecolor: ['rgb(40, 90, 20)', 'rgb(120,20,20)'],
       time: getTime(),
       windowHeight: '',
       windowWidth: '',
