@@ -2,23 +2,25 @@
 	<div id="edit" :style="{minHeight:windowHeight + 10 + 'px'}">
 		<form action="" class="data">
       <div class="space"></div>
-			<input type="text" class="task_name control" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">
-      <textarea name="detail" class='control' id="detail"  v-model="detail" placeholder="任务详情" maxlength=500 ></textarea>
-      <div class='switch control'>不限时间范围<switch @change="allTime" :value="long_trem" :checked="long_term"/></div>
-			<div :class="{pick:true, control:true, dispick:long_term}">
+			<input type="text" class="task_name baseline" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">
+      <textarea name="detail" id="detail"  v-model="detail" placeholder="任务详情" maxlength=500 ></textarea>
+      <div class='switch baseline'>不限时间范围<switch @change="allTime" :value="long_trem" :checked="long_term"/></div>
+			<div :class="{pick:true, baseline:true, dispick:long_term}">
+        <span>开始时间：</span>
 				<picker class="picker" mode="date" @change="change_sd" :disabled="long_term">
-				    开始时间：{{start_date}}
+				  {{start_date}}
 				</picker>&nbsp;&nbsp;
 				<picker class="picker" mode="time" :value="start_time" @change="change_st" :disabled="long_term">
-				    {{start_time}}
+				  {{start_time}}
 				</picker>
 			</div>
-			<div :class="{pick:true, control:true, dispick:long_term}">				
+			<div :class="{pick:true, baseline:true, dispick:long_term}">	
+        <span>结束时间：</span>			
 				<picker class="picker" mode="date" :value="end_date" @change="change_ed" :disabled="long_term" :start="start_date">
-				    结束时间：{{end_date}}
+				  {{end_date}}
 				</picker>&nbsp;&nbsp;
 				<picker class="picker" mode="time" :value="end_time" @change="change_et" :disabled="long_term" >
-				    {{end_time}}
+				  {{end_time}}
 				</picker>
 			</div>
 		</form>
@@ -176,13 +178,15 @@ export default{
 #edit{
   background-color: rgb(230,230,230);
 }
-.control{
+.baseline{
   box-sizing: border-box;
   background-color: rgb(255,255,255);
   margin-top:10px;
-  height:35px;
-  padding:5px 10px;
-  line-height: 35px;
+  margin-bottom:10px;
+  padding:0px 15px;
+  line-height: 40px;
+  height: 40px;
+  position: relative;
 }
 .task_name{
   border-top:1px solid rgb(230,230,230);
@@ -201,17 +205,25 @@ switch{
 .pick{
   border-bottom: 1px solid rgb(230,230,230);
 }
+/* .pick span{
+  margin-right: 20px;
+} */
 .dispick{
   color:rgb(90,90,90);
 }
 .pick>picker{
   display: inline-block;
+  float: right;
+  margin-right: 20px;
 }
 #detail{
-  padding-right: 10px;
+  padding: 10px;
   background-color: #FFF;
   width:100%;
   min-height:140px;
+  box-sizing: border-box;
+  background-color: rgb(255,255,255);
+  margin-top:10px;
 }
 .save{
   position:absolute;

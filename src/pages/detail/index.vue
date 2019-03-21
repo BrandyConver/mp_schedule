@@ -102,6 +102,7 @@ export default {
     }
   },
   onShow (shrtic) {
+      this.loading = true
   },
   onLoad (options) {
     wx.cloud.init();

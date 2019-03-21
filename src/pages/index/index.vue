@@ -240,7 +240,7 @@ export default {
   },
   onLoad () {
     wx.showLoading({
-      title: '加载中'
+      title: 'loading...'
     })
     wx.cloud.init();
     // 获取屏幕高度宽度，存入store
@@ -365,13 +365,13 @@ export default {
   flex:auto;
 }
 .toedit{
-  width:50px;
-  height:50px;
-  padding:3px;
+  width:40px;
+  height:40px;
+  padding:10px;
   position:fixed;
   border-radius:35px;
-  background-color:rgba(0, 13, 192, 0.5);
-  bottom:20px;
+  background-color:rgba(49, 61, 238, 0.842);
+  bottom:30px;
   right:20px;
 }
 .multi_btn{
