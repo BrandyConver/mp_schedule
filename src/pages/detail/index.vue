@@ -1,12 +1,13 @@
 <template>
-  <div id="detail" :style="{minHeight:windowHeight + 50 + 'px'}">
+  <div id="detail" :style="{minHeight:windowHeight + 40 + 'px'}">
     <div class="task_content">
       <div class="task_name">{{task.task_name}}</div>
       <div class="detail">
         <span>任务详情：</span>
-        <div >{{task.detail}}</div>
+        <div @tap="doubleTap">{{task.detail}}</div>
       </div>
       <div class="sp_ard"><span>任务状态:</span><span class="status">{{task.finished?'已完成':'未完成'}}</span></div>
+      <div class="sp_ard"><span>置顶:</span><span class="status">{{task.isTop?'是':'否'}}</span></div>
       <div v-if="task.long_term">
         <div class="sp_ard"><span>任务时间:</span><span class="status">长期任务</span></div>
       </div>
@@ -37,12 +38,20 @@ export default {
     return {
       task: {
       },
+      id: '',
       isCreator: true,
+      lastTap: 0,
       windowHeight: wx.getSystemInfoSync().windowHeight,
       loading: true
     }
   },
   methods: {
+    doubleTap (e) {
+      if (e.timeStamp - this.lastTap <= 350) {
+        this.toEdit();
+      }
+      this.lastTap = e.timeStamp;
+    },
     finish () {
       this.tasks.doc(this.id).update({
         data: {
@@ -83,7 +92,7 @@ export default {
     },
     // 跳转到编辑页 并传递任务详细内容
     toEdit () { // 存入缓存 pending
-      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}&detail=${this.task.detail}&long_term=${this.task.long_term}`;
+      let url = `../edit/main?id=${this.id}&task_name=${this.task.task_name}&start_time=${this.task.start_time}&end_time=${this.task.end_time}&detail=${this.task.detail}&long_term=${this.task.long_term}&isTop=${this.task.isTop}`;
       wx.redirectTo({url});
       wx.setStorage({
         key: 'detail',
@@ -92,8 +101,11 @@ export default {
     }
   },
   watch: {
+    id () {
+      this.loading = true;
+    },
     task () {
-      this.loading = false
+      this.loading = false;
     }
   },
   onShareAppMessage (res) {
@@ -102,9 +114,11 @@ export default {
     }
   },
   onShow (shrtic) {
-      this.loading = true
+    // this.loading = true;
+    // console.log(shrtic) // share
   },
   onLoad (options) {
+    this.loading = true;
     wx.cloud.init();
     // 获取访问者openid
     const getopenid = wx.cloud.callFunction({
@@ -163,21 +177,21 @@ export default {
 }
 .task_name{
   text-align: center;
-  font-size: 24px;
-  font-size:100%;
+  font-size: 20px;
+  font-weight: normal;
+  /* font-size:100%; */
 }
 .detail>span{
   padding:0 20px;
 }
 .detail>div{
-  font-size: 18px;
   white-space: pre-wrap;
-  min-height: 100px;
-  max-height: 240px;
+  min-height: 140px;
+  max-height: 220px;
   line-height: 34px;
   overflow:auto;
   background-color: #fff;
-  padding:10px 10px;
+  padding:5px 10px;
 }
 .buttons{
   padding: 5px 0;

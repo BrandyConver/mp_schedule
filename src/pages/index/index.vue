@@ -7,7 +7,7 @@
         <img src="/static/icon/search.svg" alt="" @tap="search">
       </div>
       <div v-if="tasks.length>0" class="task_list" >
-        <div class="task" :class="{ltt:task.long_term}" :style="{background:task.long_term?localSetting.lightnessltm:localSetting.lightnessnor}"
+        <div class="task" :class="{ltt:task.long_term}" :style="{background:task.isTop?'#f5f5f3':(task.long_term?localSetting.lightnessltm:localSetting.lightnessnor)}"
           v-for="task of tasks" :key="task._id" @click="toDetail(task._id)" @longpress="multi=true">
           <div class="task_name" :style="{color:task.long_term?localSetting.fontColorltm:localSetting.fontColornor}">{{task.task_name}}</div>
           <div class="task_time">
@@ -184,7 +184,7 @@ export default {
       db.collection('tasks').where({
         _openid: this.openid,
         finished: false
-      }).orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc')
+      }).orderBy('isTop', 'desc').orderBy('long_term', 'asc').orderBy('end_time', 'asc').orderBy('task_name', 'asc')
       .field({
         task_name: true,
         _id: true,

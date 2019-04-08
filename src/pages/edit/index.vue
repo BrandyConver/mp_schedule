@@ -5,20 +5,21 @@
 			<input type="text" class="task_name baseline" name="task_name" v-model.lazy="task_name" maxlength="50" placeholder="任务名称">
       <textarea name="detail" id="detail"  v-model="detail" placeholder="任务详情" maxlength=500 ></textarea>
       <div class='switch baseline'>不限时间范围<switch @change="allTime" :value="long_trem" :checked="long_term"/></div>
+      <div class='switch baseline'>置顶<switch @change="keepTop" :value="isTop" :checked="isTop"/></div>
 			<div :class="{pick:true, baseline:true, dispick:long_term}">
-        <span>开始时间：</span>
-				<picker class="picker" mode="date" @change="change_sd" :disabled="long_term">
+        <span>开始时间： </span>
+				<picker class="picker" mode="date" :value="start_date" @change="change_sd" :disabled="long_term">
 				  {{start_date}}
-				</picker>&nbsp;&nbsp;
+				</picker>
 				<picker class="picker" mode="time" :value="start_time" @change="change_st" :disabled="long_term">
 				  {{start_time}}
 				</picker>
 			</div>
 			<div :class="{pick:true, baseline:true, dispick:long_term}">	
-        <span>结束时间：</span>			
+        <span>结束时间： </span>			
 				<picker class="picker" mode="date" :value="end_date" @change="change_ed" :disabled="long_term" :start="start_date">
 				  {{end_date}}
-				</picker>&nbsp;&nbsp;
+				</picker>
 				<picker class="picker" mode="time" :value="end_time" @change="change_et" :disabled="long_term" >
 				  {{end_time}}
 				</picker>
@@ -34,6 +35,7 @@ export default{
     return {
       task_data: {},
       long_term: false,
+      isTop: false,
       task_name: '',
       start_date: '',
       start_time: '',
@@ -55,7 +57,6 @@ export default{
       this.start_time = e.mp.detail.value;
       if (this.end_date === this.start_date && this.end_time < this.start_time) {
         this.end_time = this.start_time;
-        console.log(this.end_time);
       }
   	},
   	change_ed (e) {
@@ -73,6 +74,9 @@ export default{
       if (!this.long_term) {
         this.initTime();
       }
+    },
+    keepTop (e) {
+      this.isTop = e.mp.detail.value;
     },
     initTime () {
       let time = new Date();
@@ -94,6 +98,7 @@ export default{
         let data = {
           task_name: this.task_name,
           long_term: this.long_term,
+          isTop: this.isTop,
           finished: false,
           start_time: this.start_date + ' ' + this.start_time,
           end_time: this.end_date + ' ' + this.end_time,
@@ -141,7 +146,14 @@ export default{
     if (options.id) {
       this.id = options.id;
       this.task_name = options.task_name;
-      if (options.long_term === 'false' || options.long_term === undefined) {
+      // attention!!! options.isTop 和 long_term 是 字符串
+      if (options.isTop === 'undefined' || options.isTop === 'false') {
+        this.isTop = false
+      } else {
+        this.isTop = true;
+      }
+      console.log('istop:', this.isTop)
+      if (options.long_term === 'false' || options.long_term === 'undefined') {
         this.long_term = false;
         this.start_date = options.start_time.split(' ')[0];
         this.start_time = options.start_time.split(' ')[1];
@@ -150,7 +162,7 @@ export default{
       } else {
         this.long_term = true;
       }
-      // 用localStorage存储detail,过长的detail会在url中丢失
+      // 用localStorage存储detail,url长度有限
       wx.getStorage({
         key: 'detail',
         success: res => { this.detail = res.data }
@@ -205,25 +217,23 @@ switch{
 .pick{
   border-bottom: 1px solid rgb(230,230,230);
 }
-/* .pick span{
-  margin-right: 20px;
-} */
 .dispick{
   color:rgb(90,90,90);
 }
 .pick>picker{
   display: inline-block;
-  float: right;
-  margin-right: 20px;
+  margin-left: 30px;
 }
 #detail{
+  font-size: 18px;
   padding: 10px;
   background-color: #FFF;
   width:100%;
-  min-height:140px;
+  min-height:200px;
   box-sizing: border-box;
   background-color: rgb(255,255,255);
   margin-top:10px;
+  line-height: 30px
 }
 .save{
   position:absolute;
