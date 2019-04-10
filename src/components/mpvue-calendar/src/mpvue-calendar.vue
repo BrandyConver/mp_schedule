@@ -763,10 +763,8 @@
         if (Math.abs(e.mp.changedTouches[0].clientY - this.touchStartY) < 50 && e.timeStamp - this.touchStartTimeStamp < 500) {
           if (e.mp.changedTouches[0].clientX - this.touchStartX > 120) {
             this.prev(e)
-            console.log('pre')
           } else if (e.mp.changedTouches[0].clientX - this.touchStartX < -120) {
             this.next(e)
-            console.log('next')
           }
         }
       },

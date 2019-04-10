@@ -37,6 +37,7 @@ export default {
     'Calendar': Calendar
   },
   methods: {
+    // 选中日期，显示当日的task
     select (val1, val2) {
       this.todayTasks = [];
       if (val2.event) {
@@ -92,28 +93,31 @@ export default {
         }
       }).then(res => {
         this.allTasks = res.result;
-        for (let i = 0; i <= this.allTasks.length; i++) {
-          let startMonth = parseInt(res.result[i].start_time.substr(5, 2))
-          let endMonth = parseInt(res.result[i].end_time.substr(5, 2))
-          let startDate = parseInt(res.result[i].start_time.substr(8, 2))
-          let endDate = parseInt(res.result[i].end_time.substr(8, 2))
+        try {
+          this.allTasks.forEach((element, index) => {
+          let startMonth = parseInt(element.start_time.substr(5, 2))
+          let endMonth = parseInt(element.end_time.substr(5, 2))
+          let startDate = parseInt(element.start_time.substr(8, 2))
+          let endDate = parseInt(element.end_time.substr(8, 2))
           let eventStart = startDate
           let eventEnd = endDate
           if (startMonth < month) {
             eventStart = 1 // 始于上月，从一号开始
           }
-          // end next month
           if (endMonth > month) {
             eventEnd = 31 // 止于次月，最多到31号，传入不存在的日期不会报错
           }
           for (let eventNow = eventStart; eventNow <= eventEnd; eventNow++) {
             if (this.events[`${year}-${month}-${eventNow}`] === undefined) {
-              // 使用Vue.set添加属性，触发视图更新，直接添加属性不行
-              this.$set(this.events, `${year}-${month}-${eventNow}`, res.result[i]._id)
+              // 使用Vue.set添加响应式属性，触发视图更新，其日期属性值为一个数组
+              this.$set(this.events, `${year}-${month}-${eventNow}`, [element._id])
             } else {
-              this.events[`${year}-${month}-${eventNow}`].push(res.result[i]._id)
+              this.events[`${year}-${month}-${eventNow}`].push(element._id)
             }
           }
+        });
+        } catch (e) {
+          console.log(e)
         }
       }).catch(res => {
         // console.log(res.errMsg)
@@ -123,12 +127,21 @@ export default {
   computed: {
   },
   watch: {
+    events () {
+      // console.log(this.events)
+    }
   },
   onLoad () {
     this.windowHeight = store.state.deviceHeight;
     this.getTaskEvent(new Date().getFullYear(), new Date().getMonth() + 1); // now year now month
   },
   onShow () {
+    // 修改数据后回到页面 视图不更新 this.events的属性是 非响应式 的
+    // Object.keys(this.events).forEach(key => {
+    //   this.$delete(this.events, key)
+    // })
+    this.events = {};
+    this.getTaskEvent()
   },
   onHide () {
   }
